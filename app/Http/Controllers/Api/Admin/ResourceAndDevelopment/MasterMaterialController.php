@@ -204,7 +204,7 @@ class MasterMaterialController extends Controller
                 ],[
                     'material_function' => 'product_accessories',
                 ],[
-                    'material_function' => 'additional_accessories',
+                    'material_function' => 'material_accessories',
                 ],
             ];
 

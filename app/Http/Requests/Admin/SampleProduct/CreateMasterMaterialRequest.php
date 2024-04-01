@@ -26,7 +26,8 @@ class CreateMasterMaterialRequest extends FormRequest
         return [
             'material_name' => 'required|string',
             'material_description' => 'required|string',
-            'material_photo' => 'required|string'
+            'material_function' => 'required|string',
+            'material_photo' => 'required|string',
         ];
     }
 }

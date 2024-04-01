@@ -127,6 +127,9 @@ Route::middleware('jwt.verify')->group(function () {
             // Style's Route
             Route::get('/style', 'Api\Admin\ResourceAndDevelopment\StyleController@index');
             Route::post('/style/create', 'Api\Admin\ResourceAndDevelopment\StyleController@store');
+            Route::get('/style/sub-style', 'Api\Admin\ResourceAndDevelopment\StyleController@getSubStyle');
+            Route::get('/style/sub-style/create', 'Api\Admin\ResourceAndDevelopment\StyleController@createSubStyle');
+            Route::get('/style/sub-style/{id}/delete', 'Api\Admin\ResourceAndDevelopment\StyleController@deleteSubStyle');
 
             // Fabric Texture's Route
             Route::post('/input-fabric-texture', 'Api\Admin\ResourceAndDevelopment\SampleProductController@inputFabricTexture');

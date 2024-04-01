@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Api\Admin\ResourceAndDevelopment;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Style;
+use App\Models\{Style, SubStyle};
+use Illuminate\Support\Facades\DB;
 
 class StyleController extends Controller
 {
@@ -95,6 +96,76 @@ class StyleController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function getSubStyle()
+    {
+        try {
+            $styleId = request()->style_id;
+
+            $subStyle = SubStyle::select([
+                'sub_styles.id',
+                DB::raw('styles.style_name'),
+                'sub_style_name'
+            ])->leftJoin('styles', 'styles.id', '=', 'sub_styles.style_id')
+            ->when($styleId, function ($query) use ($styleId) {
+                $query->where('style_id', '=', $styleId);
+            })->get();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $subStyle,
+                'error' => null
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'failed',
+                'data' => null,
+                'error' => $th->getMessage()
+            ], 400);
+        }
+    }
+
+    public function createSubStyle(Request $request)
+    {
+        try {
+            $subStyle = SubStyle::create([
+                'style_id' => $request->style_id,
+                'sub_style_name' => $request->sub_style_name
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $subStyle,
+                'error' => null
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'failed',
+                'data' => null,
+                'error' => $th->getMessage()
+            ], 400);
+        }
+    }
+
+    public function deleteSubStyle($id)
+    {
+        try {
+            $subStyle = SubStyle::where('id', '=', $id)->first();
+            $subStyle->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => true,
+                'error' => null
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'failed',
+                'data' => null,
+                'error' => $th->getMessage()
+            ], 400);
+        }
     }
 
     private function checkStyleName($styleName)

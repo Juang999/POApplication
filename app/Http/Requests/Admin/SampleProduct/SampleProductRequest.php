@@ -25,10 +25,11 @@ class SampleProductRequest extends FormRequest
     {
         return [
             'date' => 'required|date',
+            'reference_sample_id' => 'nullable|integer',
             'article_name' => 'required|string',
             'entity_name' => 'required|string',
             'style_id' => 'required|integer',
-            'material' => 'required|string',
+            'sub_style_id' => 'nullable|integer',
             'size' => 'required|string',
             'accessories' => 'required|string',
             'note_description' => 'nullable|string',
@@ -38,8 +39,7 @@ class SampleProductRequest extends FormRequest
             'leader_designer_id' => 'nullable|integer',
             'photo' => 'required|string',
             'sample_design' => 'required|string',
-            'description_fabric' => 'required|string',
-            'photo_fabric' => 'required|string'
+            'material_id' => 'required|string',
         ];
     }
 }
