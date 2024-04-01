@@ -189,6 +189,7 @@ class SampleProductController extends Controller
                     'date' => $requests['date'],
                     'article_name' => $requests['article_name'],
                     'style_id' => $requests['style_id'],
+                    'sub_style_id' => $requests['sub_style_id'],
                     'entity_name' => $requests['entity_name'],
                     'material' => $requests['material'],
                     'size' => $requests['size'],

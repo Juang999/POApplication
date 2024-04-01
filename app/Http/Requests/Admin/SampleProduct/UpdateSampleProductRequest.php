@@ -27,6 +27,7 @@ class UpdateSampleProductRequest extends FormRequest
             'date' => 'nullable|date',
             'article_name' => 'nullable|string',
             'style_id' => 'nullable|integer',
+            'sub_style_id' => 'nullable|integer',
             'entity_name' => 'nullable|string',
             'material' => 'nullable|string',
             'size' => 'nullable|string',

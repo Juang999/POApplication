@@ -107,7 +107,7 @@ class StyleController extends Controller
                 'sub_styles.id',
                 DB::raw('styles.style_name'),
                 'sub_style_name'
-            ])->leftJoin('styles', 'styles.id', '=', 'sub_styles.style_id')
+            ])->leftJoin('styles', 'styles.id', '=', 'sub_styles.sub_style_id')
             ->when($styleId, function ($query) use ($styleId) {
                 $query->where('style_id', '=', $styleId);
             })->get();
@@ -130,7 +130,7 @@ class StyleController extends Controller
     {
         try {
             $subStyle = SubStyle::create([
-                'style_id' => $request->style_id,
+                'sub_style_id' => $request->style_id,
                 'sub_style_name' => $request->sub_style_name
             ]);
 
