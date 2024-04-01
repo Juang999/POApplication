@@ -137,6 +137,12 @@ Route::middleware('jwt.verify')->group(function () {
             Route::delete('/{id}/delete-sample-design', 'Api\Admin\ResourceAndDevelopment\SampleProductController@deleteSampleDesign');
         });
 
+        Route::prefix('master-material')->group(function () {
+            Route::get('/', 'Api\Admin\ResourceAndDevelopment\MasterMaterialController@index');
+            Route::post('/create', 'Api\Admin\ResourceAndDevelopment\MasterMaterialController@store');
+            Route::delete('/{id}/delete', 'Api\Admin\ResourceAndDevelopment\MasterMaterialController@destroy');
+        });
+
         Route::prefix('staff-rnd')->group(function () {
             Route::get('/designer', 'Api\Admin\ResourceAndDevelopment\DesignerController@getDesigner');
             Route::get('/merchandiser', 'Api\Admin\ResourceAndDevelopment\DesignerController@getMerchandiser');
