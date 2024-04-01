@@ -192,4 +192,33 @@ class MasterMaterialController extends Controller
             ], 400);
         }
     }
+
+    public function getMaterialFunction()
+    {
+        try {
+            $materialFunction = [
+                [
+                    'material_function' => 'is_main',
+                ],[
+                    'material_function' => 'is_additional',
+                ],[
+                    'material_function' => 'product_accessories',
+                ],[
+                    'material_function' => 'additional_accessories',
+                ],
+            ];
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $materialFunction,
+                'error' => null
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'failed',
+                'data' => null,
+                'error' => $th->getMessage()
+            ], 400);
+        }
+    }
 }
