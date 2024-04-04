@@ -119,6 +119,7 @@ Route::middleware('jwt.verify')->group(function () {
             Route::delete('/{id}/delete', 'Api\Admin\ResourceAndDevelopment\SampleProductController@destroy');
             Route::get('/{id}/history', 'Api\Admin\ResourceAndDevelopment\SampleProductController@getHistorySample');
             Route::get('/all-history', 'Api\Admin\ResourceAndDevelopment\SampleProductController@getAllHistory');
+            Route::get('/sample-references', 'APi\Admin\ResourceAndDevelopment\SampleProductController@getReferencesSample');
 
             // Photo's Route
             Route::post('/input-photo', 'Api\Admin\ResourceAndDevelopment\SampleProductController@insertSamplePhoto');
@@ -128,8 +129,8 @@ Route::middleware('jwt.verify')->group(function () {
             Route::get('/style', 'Api\Admin\ResourceAndDevelopment\StyleController@index');
             Route::post('/style/create', 'Api\Admin\ResourceAndDevelopment\StyleController@store');
             Route::get('/style/sub-style', 'Api\Admin\ResourceAndDevelopment\StyleController@getSubStyle');
-            Route::post('/style/sub-style/create', 'Api\Admin\ResourceAndDevelopment\StyleController@createSubStyle');
             Route::delete('/style/sub-style/{id}/delete', 'Api\Admin\ResourceAndDevelopment\StyleController@deleteSubStyle');
+            Route::post('/style/sub-style/create', 'Api\Admin\ResourceAndDevelopment\StyleController@createSubStyle');
 
             // Fabric Texture's Route
             Route::post('/input-fabric-texture', 'Api\Admin\ResourceAndDevelopment\SampleProductController@inputFabricTexture');
@@ -138,6 +139,12 @@ Route::middleware('jwt.verify')->group(function () {
             // input data sample design
             Route::post('/input-sample-design', 'Api\Admin\ResourceAndDevelopment\SampleProductController@inputSampleDesign');
             Route::delete('/{id}/delete-sample-design', 'Api\Admin\ResourceAndDevelopment\SampleProductController@deleteSampleDesign');
+        });
+
+        Route::prefix('category-partnumber')->group(function () {
+            Route::get('/', 'Api\Admin\ResourceAndDevelopment\CategoryPartnumberController@index');
+            Route::post('/create', 'Api\Admin\ResourceAndDevelopment\CategoryPartnumberController@store');
+            Route::delete('/{id}/delete', 'Api\Admin\ResourceAndDevelopment\CategoryPartnumberController@destroy');
         });
 
         Route::prefix('master-material')->group(function () {

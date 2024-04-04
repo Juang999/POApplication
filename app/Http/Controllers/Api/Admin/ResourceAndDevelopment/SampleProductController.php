@@ -442,6 +442,52 @@ class SampleProductController extends Controller
         }
     }
 
+    public function inputFabricTexture(InputFabricTextureRequest $request)
+    {
+        try {
+            $this->inputFabricPhoto([
+                'photo_fabric' => $request->fabric_photo,
+                'sample_product_id' => $request->sample_product_id,
+                'description_fabric' => $request->fabric_description,
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => true,
+                'error' => null
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'failed',
+                'data' => null,
+                'error' => $th->getMessage()
+            ], 400);
+        }
+    }
+
+    public function getReferencesSample()
+    {
+        try {
+            $searchSample = request()->sample;
+
+            $sampleProduct = SampleProduct::select('id', 'article_name')
+                                        ->when($searchSample, fn ($query) => $query->where('article_name', 'LIKE', "%$searchSample%"))
+                                        ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $sampleProduct,
+                'error' => null
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'failed',
+                'data' => null,
+                'error' => $th->getMessage()
+            ], 400);
+        }
+    }
+
     private function deleteFabric($sampleProductId)
     {
         $dataFabric = FabricTexture::select('id')->where('sample_product_id', '=', $sampleProductId)->get();
@@ -465,29 +511,6 @@ class SampleProductController extends Controller
 
                 $data->delete();
             });
-        }
-    }
-
-    public function inputFabricTexture(InputFabricTextureRequest $request)
-    {
-        try {
-            $this->inputFabricPhoto([
-                'photo_fabric' => $request->fabric_photo,
-                'sample_product_id' => $request->sample_product_id,
-                'description_fabric' => $request->fabric_description,
-            ]);
-
-            return response()->json([
-                'status' => 'success',
-                'data' => true,
-                'error' => null
-            ], 200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 'failed',
-                'data' => null,
-                'error' => $th->getMessage()
-            ], 400);
         }
     }
 
