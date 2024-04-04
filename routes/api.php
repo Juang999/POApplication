@@ -119,7 +119,7 @@ Route::middleware('jwt.verify')->group(function () {
             Route::delete('/{id}/delete', 'Api\Admin\ResourceAndDevelopment\SampleProductController@destroy');
             Route::get('/{id}/history', 'Api\Admin\ResourceAndDevelopment\SampleProductController@getHistorySample');
             Route::get('/all-history', 'Api\Admin\ResourceAndDevelopment\SampleProductController@getAllHistory');
-            Route::get('/sample-references', 'APi\Admin\ResourceAndDevelopment\SampleProductController@getReferencesSample');
+            Route::get('/sample-references', 'Api\Admin\ResourceAndDevelopment\SampleProductController@getReferencesSample');
 
             // Photo's Route
             Route::post('/input-photo', 'Api\Admin\ResourceAndDevelopment\SampleProductController@insertSamplePhoto');
