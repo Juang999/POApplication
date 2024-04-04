@@ -83,7 +83,7 @@ class SampleProductController extends Controller
 
                 $sampleProduct = SampleProduct::create([
                     'date' => $request->date,
-                    'reference_sample_id' => $request->reference_sample_id,
+                    'reference_sample_id' => ($request->reference_sample_id) ? $request->reference_sample_id : null,
                     'article_name' => $request->article_name,
                     'style_id' => $request->style_id,
                     'sub_style_id' => ($request->sub_style_id) ? $request->sub_style_id : null,
@@ -187,6 +187,7 @@ class SampleProductController extends Controller
             DB::beginTransaction();
                 $sampleProduct->update([
                     'date' => $requests['date'],
+                    'reference_sample_id' => $requests['reference_sample_id'],
                     'article_name' => $requests['article_name'],
                     'style_id' => $requests['style_id'],
                     'sub_style_id' => $requests['sub_style_id'],
@@ -471,7 +472,7 @@ class SampleProductController extends Controller
             $searchSample = request()->sample;
 
             $sampleProduct = SampleProduct::select('id', 'article_name')
-                                        ->when($searchSample, fn ($query) => $query->where('article_name', 'LIKE', "%$searchSample%"))
+                                        ->when($searchSample, fn ($query) =>  $query->where('article_name', 'LIKE', "%$searchSample%"))
                                         ->get();
 
             return response()->json([
@@ -542,7 +543,7 @@ class SampleProductController extends Controller
 
     private function requestUpdateSampelProduct($request, $id)
     {
-        $sampleProduct = SampleProduct::select('id','date','article_name', 'style_id', 'sub_style_id', 'entity_name', 'material', 'size', 'accessories', 'note_and_description', 'design_file', 'designer_id', 'md_id', 'leader_designer_id')
+        $sampleProduct = SampleProduct::select('id', 'reference_sample_id','date','article_name', 'style_id', 'sub_style_id', 'entity_name', 'material', 'size', 'accessories', 'note_and_description', 'design_file', 'designer_id', 'md_id', 'leader_designer_id')
                                     ->where('id', '=', $id)
                                     ->first();
 
@@ -552,6 +553,7 @@ class SampleProductController extends Controller
 
         $requests = [
             'date' => ($request->date) ? $request->date : $sampleProduct->date,
+            'reference_sample_id' => ($request->reference_sample_id) ? $request->reference_sample_id : $sampleProduct->reference_sample_id,
             'article_name' => ($request->article_name) ? $request->article_name : $sampleProduct->article_name,
             'style_id' => ($request->style_id) ? $request->style_id : $sampleProduct->style_id,
             'sub_style_id' => ($request->sub_style_id) ? $request->sub_style_id : $sampleProduct->sub_style_id,
