@@ -392,6 +392,36 @@ class VotingController extends Controller
         }
     }
 
+    public function getSumaryResult($eventId)
+    {
+        try {
+            $eventVoting = VotingEvent::select('id', 'start_date', 'title', 'description', 'is_activate')
+                                    ->with([
+                                        'ScoreVoting' => function ($query) {
+                                            $query->select('voting_scores.id', 'voting_event_id', DB::raw('sample_products.article_name AS article_name'), DB::Raw('SUM(score) AS total_score'))
+                                                    ->with('Thumbnail')
+                                                    ->leftJoin('sample_products', 'sample_products.id', '=', 'voting_scores.sample_product_id')
+                                                    ->groupBy('voting_scores.id', 'voting_event_id', 'article_name')
+                                                    ->orderByDesc('total_score');
+
+                                        }
+                                    ])->where('id', '=', $eventId)
+                                    ->first();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $eventVoting,
+                'error' => null
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'failed',
+                'data' => null,
+                'error' => $th->getMessage()
+            ], 400);
+        }
+    }
+
     private function turnOffEvent()
     {
         $userId = Auth::user()->id;

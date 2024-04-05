@@ -166,16 +166,17 @@ Route::middleware('jwt.verify')->group(function () {
         Route::prefix('voting')->group(function () {
             Route::get('/sample', 'Api\Admin\ResourceAndDevelopment\VotingController@getSample');
             Route::get('/data', 'Api\Admin\ResourceAndDevelopment\VotingController@getAllEvent');
-            Route::delete('/{id}/delete-event', 'Api\Admin\ResourceAndDevelopment\VotingController@deleteEvent');
             Route::post('/create', 'Api\Admin\ResourceAndDevelopment\VotingController@createEvent');
             Route::post('/add-sample', 'Api\Admin\ResourceAndDevelopment\VotingController@addNewSample');
             Route::get('/{id}/detail', 'Api\Admin\ResourceAndDevelopment\VotingController@getDetailEvent');
             Route::post('/invite-member', 'Api\Admin\ResourceAndDevelopment\VotingController@inviteMember');
             Route::put('/{id}/update-event', 'Api\Admin\ResourceAndDevelopment\VotingController@updateEvent');
-            Route::delete('/{id}/{sampleId}/remove-sample', 'Api\Admin\ResourceAndDevelopment\VotingController@removeSample');
+            Route::delete('/{id}/delete-event', 'Api\Admin\ResourceAndDevelopment\VotingController@deleteEvent');
             Route::patch('/{id}/activate-event', 'Api\Admin\ResourceAndDevelopment\VotingController@activateEvent');
             Route::patch('/{id}/activate', 'Api\Admin\ResourceAndDevelopment\VotingController@showingSampleForAdmin');
+            Route::get('/{eventId}/summary-voting', 'Api\Admin\ResourceAndDevelopment\VotingController@getSumaryResult');
             Route::get('/{eventId}/{vid}/get-result', 'Api\Admin\ResourceAndDevelopment\VotingController@getResultVoting');
+            Route::delete('/{id}/{sampleId}/remove-sample', 'Api\Admin\ResourceAndDevelopment\VotingController@removeSample');
             Route::delete('/{id}/{attendanceId}/cancel-invitation', 'Api\Admin\ResourceAndDevelopment\VotingController@removeInvitation');
         });
     });
