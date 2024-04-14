@@ -120,6 +120,7 @@ Route::middleware('jwt.verify')->group(function () {
             Route::get('/{id}/history', 'Api\Admin\ResourceAndDevelopment\SampleProductController@getHistorySample');
             Route::get('/all-history', 'Api\Admin\ResourceAndDevelopment\SampleProductController@getAllHistory');
             Route::get('/sample-references', 'Api\Admin\ResourceAndDevelopment\SampleProductController@getReferencesSample');
+            Route::post('/make-into-product', 'Api\Admin\ResourceAndDevelopment\SampleProductController@createClothes');
 
             // Photo's Route
             Route::post('/input-photo', 'Api\Admin\ResourceAndDevelopment\SampleProductController@insertSamplePhoto');

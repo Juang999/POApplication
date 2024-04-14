@@ -6,15 +6,19 @@ use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\{Hash, DB};
 use App\Http\Requests\Admin\SampleProduct\{
+    CreateClothesRequest,
     SampleProductRequest,
     InsertSamplePhotoRequest,
+    InputSampleDesignRequest,
     InputFabricTextureRequest,
     UpdateSampleProductRequest,
-    InputSampleDesignRequest,
-    CreateMasterMaterialRequest
+    CreateMasterMaterialRequest,
 };
 use App\{
     User,
+    Models\Size,
+    Models\Clothes,
+    Models\Partnumber,
     Models\SIP\UserSIP,
     Models\SampleDesign,
     Models\SampleProduct,
@@ -26,9 +30,16 @@ use App\{
     Models\HistorySampleProductPhoto,
 };
 use Spatie\Activitylog\Models\Activity;
+use Illuminate\Support\Facades\Http;
 
 class SampleProductController extends Controller
 {
+    protected $url;
+
+    public function __construct() {
+        $this->url = env('URL_EXAPRO');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -489,6 +500,32 @@ class SampleProductController extends Controller
         }
     }
 
+    public function createClothes(CreateClothesRequest $request)
+    {
+        try {
+            $grade = explode(',', strtoupper($request->grade));
+
+            DB::beginTransaction();
+                collect($grade)->each(function ($item) use ($request) {
+                    $this->inputCLothes($item, $request);
+                });
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => true,
+                'error' => null
+            ], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'failed',
+                'data' => null,
+                'error' => $th->getMessage()
+            ], 400);
+        }
+    }
+
     private function deleteFabric($sampleProductId)
     {
         $dataFabric = FabricTexture::select('id')->where('sample_product_id', '=', $sampleProductId)->get();
@@ -500,6 +537,71 @@ class SampleProductController extends Controller
                 $data->delete();
             });
         }
+    }
+
+    private function inputClothes($grade, $request)
+    {
+        $size = explode(',', $request->size);
+
+        collect($size)->each(function ($item) use ($request, $grade) {
+            $codeColor = $this->generateColorCode($request->product_color);
+            $slug = strtolower($request->article_name);
+
+            $source = [
+                'size' => $item,
+                'color' => $request->color,
+                'category' => $request->category,
+                'article_name' => $request->article_name,
+                'product_order' => $request->product_order,
+                'grade' => $grade
+            ];
+
+            $articleName = $this->generateArticleName([
+                'size' => $item,
+                'color' => $request->color,
+                'category' => $request->category,
+                'article_name' => $request->article_name,
+                'product_order' => $request->product_order,
+                'grade' => $grade
+            ]);
+
+            $product =  Clothes::create([
+                'entity_name' => $request->entity_name,
+                'product_order' => $request->product_order,
+                'category' => $request->category,
+                'article_name' => $articleName,
+                'grade' => $grade,
+                'color' => $request->color,
+                'color_code' => $codeColor,
+                'material' => '-',
+                'combo' => $request->combo,
+                'special_feature' => $request->special_feature,
+                'keyword' => $request->keyword,
+                'description' => $request->description,
+                'slug' => $slug,
+                'type_id' => $request->type_id,
+                'style_id' => $request->style_id,
+                'sub_style_id' => $request->sub_style_id,
+                'is_active' => false
+            ]);
+
+            $partnumber = $this->inputPartnumber([
+                'size' => $item,
+                'color' => $codeColor,
+                'category' => $request->category,
+                'article_name' => $request->article_name,
+                'product_order' => $request->product_order,
+                'grade' => $grade
+            ], $product->id);
+
+            Http::post("$this->url/api/PK/input-product", [
+                'size' => $item,
+                'entity' => $request->entity_name,
+                'pt_code' => $partnumber,
+                'pt_desc1' => $articleName,
+                'pt_class' => $grade
+            ]);
+        });
     }
 
     private function deleteSamplePhoto($sampleProductId)
@@ -657,5 +759,50 @@ class SampleProductController extends Controller
                 $dataSample->delete();
             }
         }
+    }
+
+    private function generateColorCode($color)
+    {
+        $explodeColor = explode(' ', ucwords($color));
+        $firstArray = $explodeColor[0];
+        $countArray = count($explodeColor);
+        $countStringFirstArray = strlen($firstArray);
+
+        $codeColor = ($countArray > 0) ? $firstArray[0].$explodeColor[$countArray - 1][0]
+                                    : $firstArray[0].$explodeColor[0][$countStringFirstArray-1];
+
+        return strtoupper($codeColor);
+    }
+
+    private function generateArticleName(array $array)
+    {
+        $size = $array['size'];
+        $colorProduct = $array['color'];
+        $articleCategory = $array['category'];
+        $articleName = $array['article_name'];
+        $productOrder = $array['product_order'];
+        $grade = ($array['grade'] == 'A') ? '' : '- B';
+
+        $articleName = ($array['grade'] == 'A') ? $articleCategory.' '.$productOrder.' '.$articleName.' '.$colorProduct.''.$size
+                                                : $articleCategory.' '.$productOrder.' '.$articleName.' '.$colorProduct.' '.$size.' '.$grade;
+
+        return $articleName;
+    }
+
+    private function inputPartnumber(array $source, $clothesId)
+    {
+        $baseCode = '0000';
+        $formula = substr($baseCode, 0, -strlen($source['product_order']));
+        $formula .= $source['product_order'];
+        $sizeCode = Size::select('size_code')->where('size', '=', $source['size'])->first();
+
+        $partnumber = $source['grade'].$source['category'].$formula.$source['color'].$sizeCode->size_code;
+
+        Partnumber::create([
+            'clothes_id' => $clothesId,
+            'partnumber' => $partnumber
+        ]);
+
+        return $partnumber;
     }
 }

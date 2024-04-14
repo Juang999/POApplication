@@ -54,4 +54,9 @@ class SampleProduct extends Model
     {
         return $this->hasMany(SampleDesign::class, 'sample_product_id', 'id');
     }
+
+    public function SampleReference()
+    {
+        return $this->belongsTo('app\Models\SampleProduct', 'sample_reference_id', 'id');
+    }
 }
