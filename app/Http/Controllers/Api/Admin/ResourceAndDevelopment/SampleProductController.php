@@ -541,23 +541,13 @@ class SampleProductController extends Controller
 
     private function inputClothes($grade, $request)
     {
-        $size = explode(',', $request->size);
+        $size = json_decode($request->size, true);
 
         collect($size)->each(function ($item) use ($request, $grade) {
             $codeColor = $this->generateColorCode($request->product_color);
-            $slug = strtolower($request->article_name);
-
-            $source = [
-                'size' => $item,
-                'color' => $request->color,
-                'category' => $request->category,
-                'article_name' => $request->article_name,
-                'product_order' => $request->product_order,
-                'grade' => $grade
-            ];
 
             $articleName = $this->generateArticleName([
-                'size' => $item,
+                'size' => $item['size'],
                 'color' => $request->color,
                 'category' => $request->category,
                 'article_name' => $request->article_name,
@@ -578,15 +568,17 @@ class SampleProductController extends Controller
                 'special_feature' => $request->special_feature,
                 'keyword' => $request->keyword,
                 'description' => $request->description,
-                'slug' => $slug,
+                'slug' => strtolower($request->article_name),
                 'type_id' => $request->type_id,
                 'style_id' => $request->style_id,
                 'sub_style_id' => $request->sub_style_id,
-                'is_active' => false
+                'is_active' => false,
+                'price' => $item['price'],
+                'cost' => $item['cost']
             ]);
 
             $partnumber = $this->inputPartnumber([
-                'size' => $item,
+                'size' => $item['size'],
                 'color' => $codeColor,
                 'category' => $request->category,
                 'article_name' => $request->article_name,
@@ -595,11 +587,12 @@ class SampleProductController extends Controller
             ], $product->id);
 
             Http::post("$this->url/api/PK/input-product", [
-                'size' => $item,
+                'size' => $item['size'],
                 'entity' => $request->entity_name,
                 'pt_code' => $partnumber,
                 'pt_desc1' => $articleName,
-                'pt_class' => $grade
+                'pt_class' => $grade,
+                'pt_cost' => $item['cost']
             ]);
         });
     }
