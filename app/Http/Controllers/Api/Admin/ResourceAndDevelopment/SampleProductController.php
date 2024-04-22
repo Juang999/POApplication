@@ -114,10 +114,10 @@ class SampleProductController extends Controller
                 $this->helperInputSampleDesign(['design_photo' => $request->sample_design, 'sample_product_id' => $sampleProduct->id]);
 
                 // input material
-                $this->inputFabricPhoto(['sample_product_id' => $sampleProduct->id, 'material_id' => $request->material_id]);
-                $this->inputFabricPhoto(['sample_product_id' => $sampleProduct->id, 'material_id' => $request->material_additional_id]);
-                $this->inputFabricPhoto(['sample_product_id' => $sampleProduct->id, 'material_id' => $request->accessories_id]);
-                $this->inputFabricPhoto(['sample_product_id' => $sampleProduct->id, 'material_id' => $request->accessories_product_id]);
+                $this->inputFabricPhoto(['sample_product_id' => $sampleProduct->id, 'material_type' => 'material', 'material_id' => $request->material_id]);
+                $this->inputFabricPhoto(['sample_product_id' => $sampleProduct->id, 'material_type' => 'material_additional', 'material_id' => $request->material_additional_id]);
+                $this->inputFabricPhoto(['sample_product_id' => $sampleProduct->id, 'material_type' => 'accessories', 'material_id' => $request->accessories_id]);
+                $this->inputFabricPhoto(['sample_product_id' => $sampleProduct->id, 'material_type' => 'accessories_product', 'material_id' => $request->accessories_product_id]);
             DB::commit();
 
             return response()->json([
@@ -678,14 +678,16 @@ class SampleProductController extends Controller
     {
         $materialId = explode(',', $request['material_id']);
         $sampleProductId = $request['sample_product_id'];
+        $materialType = $request['material_type'];
 
-        collect($materialId)->each(function ($item, $index) use ($sampleProductId) {
+        collect($materialId)->each(function ($item, $index) use ($sampleProductId, $materialType) {
             $masterMaterial = MasterMaterial::find($item);
 
             FabricTexture::create([
                 'sample_product_id' => $sampleProductId,
                 'master_material_id' => $masterMaterial->id,
                 'material_name' => $masterMaterial->material_name,
+                'material_type' => $materialType,
                 'description' => $masterMaterial->material_description,
                 'photo' => $masterMaterial->material_photo,
                 'sequence' => $index + 1,
