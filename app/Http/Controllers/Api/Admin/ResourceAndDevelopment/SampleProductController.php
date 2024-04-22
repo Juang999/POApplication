@@ -110,8 +110,13 @@ class SampleProductController extends Controller
                 ]);
 
                 $this->inputSamplePhoto(['sp_id' => $sampleProduct->id, 'photo' => $request->photo]);
-                $this->inputFabricPhoto(['sample_product_id' => $sampleProduct->id, 'material_id' => $request->material_id]);
                 $this->helperInputSampleDesign(['design_photo' => $request->sample_design, 'sample_product_id' => $sampleProduct->id]);
+
+                // input material
+                $this->inputFabricPhoto(['sample_product_id' => $sampleProduct->id, 'material_id' => $request->material_id]);
+                $this->inputFabricPhoto(['sample_product_id' => $sampleProduct->id, 'material_id' => $request->material_additional_id]);
+                $this->inputFabricPhoto(['sample_product_id' => $sampleProduct->id, 'material_id' => $request->accessories_id]);
+                $this->inputFabricPhoto(['sample_product_id' => $sampleProduct->id, 'material_id' => $request->accessories_product_id]);
             DB::commit();
 
             return response()->json([

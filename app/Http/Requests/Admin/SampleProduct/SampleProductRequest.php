@@ -25,6 +25,7 @@ class SampleProductRequest extends FormRequest
     {
         return [
             'date' => 'required|date',
+            'date_tailor' => 'required',
             'reference_sample_id' => 'nullable|integer',
             'article_name' => 'required|string',
             'entity_name' => 'required|string',
@@ -40,6 +41,9 @@ class SampleProductRequest extends FormRequest
             'photo' => 'required|string',
             'sample_design' => 'required|string',
             'material_id' => 'required|string',
+            'material_additional_id' => 'required|string',
+            'accessories_id' => 'required|string',
+            'accessories_product_id' => 'required|string',
         ];
     }
 }
