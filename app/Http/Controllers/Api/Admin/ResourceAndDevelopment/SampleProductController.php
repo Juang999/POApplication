@@ -94,6 +94,7 @@ class SampleProductController extends Controller
 
                 $sampleProduct = SampleProduct::create([
                     'date' => $request->date,
+                    'tgl_jahit' => $request->date_tailor,
                     'reference_sample_id' => ($request->reference_sample_id) ? $request->reference_sample_id : null,
                     'article_name' => $request->article_name,
                     'style_id' => $request->style_id,
