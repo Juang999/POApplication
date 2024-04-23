@@ -72,6 +72,6 @@ class SampleProduct extends Model
 
     public function SampleReference()
     {
-        return $this->belongsTo('app\Models\SampleProduct', 'sample_reference_id', 'id');
+        return $this->belongsTo('app\Models\SampleProduct', 'reference_sample_id', 'id');
     }
 }

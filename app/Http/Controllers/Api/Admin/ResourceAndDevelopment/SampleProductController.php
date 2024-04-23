@@ -154,7 +154,9 @@ class SampleProductController extends Controller
         try {
             $sampleProduct = SampleProduct::select(
                 'sample_products.id',
+                'reference_sample_id',
                 'date',
+                'tgl_jahit',
                 'article_name',
                 'entity_name',
                 DB::raw('styles.style_name AS style_name'),
@@ -183,6 +185,7 @@ class SampleProductController extends Controller
                     'Accessories' => fn ($query) => $query->select('id', 'sample_product_id', 'description', 'photo')->orderBy('sequence', 'ASC'),
                     'AccessoriesProduct' => fn ($query) => $query->select('id', 'sample_product_id', 'description', 'photo')->orderBy('sequence', 'ASC'),
                     'SampleDesign' => fn ($query) => $query->select('id', 'sample_product_id', 'design_photo'),
+                    'SampleReference' => fn ($query) => $query->select('id', 'article_name')
                 ])
             ->groupBy([
                 'sample_products.id',
