@@ -169,15 +169,37 @@ class SampleProductController extends Controller
                 DB::raw('merchandiser.name AS merchandiser_name'),
                 'leader_designer_id',
                 DB::raw('designer_leader.name AS designer_leader_name'),
-            )->leftJoin(DB::raw('users AS designer'), 'designer.attendance_id', '=', 'sample_products.designer_id')
+                DB::raw('AVG(voting_scores.score) AS average_score'),
+                DB::raw("CASE WHEN AVG(voting_scores.score) IS NULL THEN true ELSE false END AS status_edit")
+            )->leftJoin('styles', 'styles.id', '=', 'sample_products.style_id')
+            ->leftJoin('voting_scores', 'voting_scores.sample_product_id', '=', 'sample_products.id')
+            ->leftJoin(DB::raw('users AS designer'), 'designer.attendance_id', '=', 'sample_products.designer_id')
             ->leftJoin(DB::raw('users AS merchandiser'), 'merchandiser.attendance_id', '=', 'sample_products.md_id')
             ->leftJoin(DB::raw('users AS designer_leader'), 'designer_leader.attendance_id', '=', 'sample_products.leader_designer_id')
-            ->leftJoin('styles', 'styles.id', '=', 'sample_products.style_id')
             ->with([
                     'PhotoSampleProduct' => fn ($query) => $query->select('id', 'sample_product_id', 'sequence', 'photo')->orderBy('sequence', 'ASC'),
                     'FabricTexture' => fn ($query) => $query->select('id', 'sample_product_id', 'description', 'photo')->orderBy('sequence', 'ASC'),
                     'SampleDesign' => fn ($query) => $query->select('id', 'sample_product_id', 'design_photo')
-                ])->find($id);
+                ])
+            ->groupBy([
+                'sample_products.id',
+                'date',
+                'article_name',
+                'entity_name',
+                'style_name',
+                'material',
+                'size',
+                'accessories',
+                'note_and_description',
+                'design_file',
+                'designer_id',
+                'designer_name',
+                'md_id',
+                'merchandiser_name',
+                'leader_designer_id',
+                'designer_leader_name'
+            ])
+            ->find($id);
 
             return response()->json([
                 'status' => 'success',
