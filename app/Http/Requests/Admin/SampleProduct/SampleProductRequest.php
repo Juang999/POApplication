@@ -32,7 +32,6 @@ class SampleProductRequest extends FormRequest
             'style_id' => 'required|integer',
             'sub_style_id' => 'nullable|integer',
             'size' => 'required|string',
-            'accessories' => 'required|string',
             'note_description' => 'nullable|string',
             'design_file' => 'nullable|string',
             'designer_id' => 'nullable|integer',
