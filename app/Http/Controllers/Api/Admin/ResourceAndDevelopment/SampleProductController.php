@@ -102,7 +102,6 @@ class SampleProductController extends Controller
                     'entity_name' => $request->entity_name,
                     'material' => '-',
                     'size' => $request->size,
-                    'accessories' => $request->accessories,
                     'note_and_description' => ($request->note_description) ? $request->note_description : '-',
                     'design_file' => $request->design_file,
                     'designer_id' => $designerId,
