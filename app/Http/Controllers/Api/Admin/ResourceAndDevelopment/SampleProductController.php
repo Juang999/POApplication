@@ -52,17 +52,25 @@ class SampleProductController extends Controller
             $requestEntity = request()->entity;
 
             $sampleProduct = SampleProduct::select(
-                'id',
+                'sample_products.id',
                 'date',
                 'article_name',
                 'entity_name',
-            )->with(['Thumbnail' => function ($query) {
+                DB::raw('AVG(voting_scores.score) AS average_score'),
+                DB::raw("CASE WHEN AVG(voting_scores.score) IS NULL THEN true ELSE false END AS status_edit")
+            )->leftJoin('voting_scores', 'voting_scores.sample_product_id', '=', 'sample_products.id')
+            ->with(['Thumbnail' => function ($query) {
                 $query->select('sample_product_id', 'sequence', 'photo');
             }])->when($requestArticle, function ($query) use ($requestArticle) {
                 $query->where('article_name', 'like', "%$requestArticle%");
             })->when($requestEntity, function ($query) use ($requestEntity) {
                 $query->where('entity_name', '=', $requestEntity);
-            })->paginate(10);
+            })->groupBy([
+                'sample_products.id',
+                'date',
+                'article_name',
+                'entity_name',
+            ])->paginate(10);
 
             return response()->json([
                 'status' => 'success',
