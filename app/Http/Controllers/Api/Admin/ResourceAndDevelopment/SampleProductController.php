@@ -160,7 +160,7 @@ class SampleProductController extends Controller
                 DB::raw('styles.style_name AS style_name'),
                 'material',
                 'size',
-                'accessories',
+                // 'accessories',
                 'note_and_description',
                 'design_file',
                 'designer_id',
@@ -178,8 +178,11 @@ class SampleProductController extends Controller
             ->leftJoin(DB::raw('users AS designer_leader'), 'designer_leader.attendance_id', '=', 'sample_products.leader_designer_id')
             ->with([
                     'PhotoSampleProduct' => fn ($query) => $query->select('id', 'sample_product_id', 'sequence', 'photo')->orderBy('sequence', 'ASC'),
-                    'FabricTexture' => fn ($query) => $query->select('id', 'sample_product_id', 'description', 'photo')->orderBy('sequence', 'ASC'),
-                    'SampleDesign' => fn ($query) => $query->select('id', 'sample_product_id', 'design_photo')
+                    'MaterialSample' => fn ($query) => $query->select('id', 'sample_product_id', 'description', 'photo')->orderBy('sequence', 'ASC'),
+                    'MaterialAdditional' => fn ($query) => $query->select('id', 'sample_product_id', 'description', 'photo')->orderBy('sequence', 'ASC'),
+                    'Accessories' => fn ($query) => $query->select('id', 'sample_product_id', 'description', 'photo')->orderBy('sequence', 'ASC'),
+                    'AccessoriesProduct' => fn ($query) => $query->select('id', 'sample_product_id', 'description', 'photo')->orderBy('sequence', 'ASC'),
+                    'SampleDesign' => fn ($query) => $query->select('id', 'sample_product_id', 'design_photo'),
                 ])
             ->groupBy([
                 'sample_products.id',

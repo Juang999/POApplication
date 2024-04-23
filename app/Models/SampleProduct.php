@@ -45,9 +45,24 @@ class SampleProduct extends Model
         return $this->hasMany(HistorySampleProduct::class, 'sample_product_id', 'id');
     }
 
-    public function FabricTexture()
+    public function MaterialSample()
     {
-        return $this->hasMany(FabricTexture::class, 'sample_product_id', 'id');
+        return $this->hasMany(FabricTexture::class, 'sample_product_id', 'id')->where('material_type', '=', 'material');
+    }
+
+    public function MaterialAdditional()
+    {
+        return $this->hasMany(FabricTexture::class, 'sample_product_id', 'id')->where('material_type', '=', 'material_additional');
+    }
+
+    public function Accessories()
+    {
+        return $this->hasMany(FabricTexture::class, 'sample_product_id', 'id')->where('material_type', '=', 'accessories');
+    }
+
+    public function AccessoriesProduct()
+    {
+        return $this->hasMany(FabricTexture::class, 'sample_product_id', 'id')->where('material_type', '=', 'accessories_product');
     }
 
     public function SampleDesign()
