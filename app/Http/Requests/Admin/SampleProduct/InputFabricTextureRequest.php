@@ -27,7 +27,6 @@ class InputFabricTextureRequest extends FormRequest
             'sample_product_id' => 'required|integer',
             'material_id' => 'required|string',
             'fabric_type' => 'required|string',
-            'fabric_photo' => 'required|string'
         ];
     }
 }

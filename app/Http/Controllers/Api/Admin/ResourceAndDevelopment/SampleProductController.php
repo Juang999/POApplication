@@ -499,7 +499,6 @@ class SampleProductController extends Controller
     {
         try {
             $this->inputFabricPhoto([
-                'photo_fabric' => $request->fabric_photo,
                 'sample_product_id' => $request->sample_product_id,
                 'material_type' => $request->fabric_type,
                 'material_id' => $request->material_id,
