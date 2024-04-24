@@ -189,6 +189,9 @@ class SampleProductController extends Controller
                 ])
             ->groupBy([
                 'sample_products.id',
+                'reference_sample_id',
+                'date',
+                'tgl_jahit',
                 'date',
                 'article_name',
                 'entity_name',
