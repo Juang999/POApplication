@@ -501,7 +501,8 @@ class SampleProductController extends Controller
             $this->inputFabricPhoto([
                 'photo_fabric' => $request->fabric_photo,
                 'sample_product_id' => $request->sample_product_id,
-                'description_fabric' => $request->fabric_description,
+                'material_type' => $request->fabric_type,
+                'material_id' => $request->material_id,
             ]);
 
             return response()->json([
