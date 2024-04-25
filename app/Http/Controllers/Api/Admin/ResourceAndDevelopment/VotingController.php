@@ -328,7 +328,44 @@ class VotingController extends Controller
     public function getActiveEvent()
     {
         try {
-            $event = VotingEvent::where('is_activate', '=', true)->first();
+            $event = VotingEvent::select([
+                                    'voting_events.id',
+                                    'start_date',
+                                    'title',
+                                    'description',
+                                    'is_activate',
+                                    DB::raw('MAX(voting_scores.score) AS highest_score'),
+                                    DB::raw('AVG(voting_scores.score) AS average_score'),
+                                    DB::raw('MIN(voting_scores.score) AS lowest_score'),
+                                    DB::raw('COUNT(DISTINCT(voting_scores.attendance_id)) AS followed_participant'),
+                                    'created_by',
+                                    'updated_by',
+                                    'voting_events.created_at',
+                                    'voting_events.updated_at',
+                                ])->leftJoin('voting_scores', 'voting_scores.voting_event_id', '=', 'voting_events.id')
+                                ->where('is_activate', '=', true)
+                                ->groupBy([
+                                    'id',
+                                    'start_date',
+                                    'title',
+                                    'description',
+                                    'is_activate',
+                                    'created_by',
+                                    'updated_by',
+                                    'voting_events.created_at',
+                                    'voting_events.updated_at',
+                                ])->with([
+                                    'Highest' => function ($query) {
+                                        $query->select('voting_event_id', 'users.name', DB::raw('sample_products.article_name AS article_name'), DB::raw('score AS highest_score'))
+                                                ->leftJoin('users', 'users.attendance_id', '=', 'voting_scores.attendance_id')
+                                                ->leftJoin('sample_products', 'sample_products.id', '=', 'voting_scores.sample_product_id');
+                                    },
+                                    'Lowest' => function ($query) {
+                                        $query->select('voting_event_id', 'users.name', DB::raw('sample_products.article_name AS article_name'), DB::raw('score AS highest_score'))
+                                                ->leftJoin('users', 'users.attendance_id', '=', 'voting_scores.attendance_id')
+                                                ->leftJoin('sample_products', 'sample_products.id', '=', 'voting_scores.sample_product_id');
+                                    }
+                                ])->first();
 
             return response()->json([
                 'status' => 'success',

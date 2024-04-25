@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Support\Facades\DB;
 
 class VotingEvent extends Model
 {
@@ -28,5 +29,15 @@ class VotingEvent extends Model
     public function ScoreVoting()
     {
         return $this->hasMany(VotingScore::class, 'voting_event_id', 'id');
+    }
+
+    public function Highest()
+    {
+        return $this->hasOne(VotingScore::class, 'voting_event_id', 'id')->orderByDesc('voting_scores.score');
+    }
+
+    public function Lowest()
+    {
+        return $this->hasOne(VotingScore::class, 'voting_event_id', 'id')->orderBy('voting_scores.score', 'ASC');
     }
 }
