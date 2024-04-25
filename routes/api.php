@@ -134,7 +134,10 @@ Route::middleware('jwt.verify')->group(function () {
             Route::post('/style/sub-style/create', 'Api\Admin\ResourceAndDevelopment\StyleController@createSubStyle');
 
             // Fabric Texture's Route
-            Route::post('/input-fabric-texture', 'Api\Admin\ResourceAndDevelopment\SampleProductController@inputFabricTexture');
+            Route::post('/input-material', 'Api\Admin\ResourceAndDevelopment\SampleProductController@inputMaterial');
+            Route::post('/input-accessories', 'Api\Admin\ResourceAndDevelopment\SampleProductController@inputAccessories');
+            Route::post('/input-material-additional', 'Api\Admin\ResourceAndDevelopment\SampleProductController@inputMaterialAdditional');
+            Route::post('/input-accessories-product', 'Api\Admin\ResourceAndDevelopment\SampleProductController@inputAccessoriesProduct');
             Route::delete('/{id}/{sampleProductId}/delete-fabric', 'Api\Admin\ResourceAndDevelopment\SampleProductController@deleteFabricTexture');
 
             // input data sample design

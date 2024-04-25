@@ -498,12 +498,81 @@ class SampleProductController extends Controller
         }
     }
 
-    public function inputFabricTexture(InputFabricTextureRequest $request)
+    public function inputMaterial(InputFabricTextureRequest $request)
     {
         try {
             $this->inputFabricPhoto([
                 'sample_product_id' => $request->sample_product_id,
-                'material_type' => $request->fabric_type,
+                'material_type' => 'material',
+                'material_id' => $request->material_id,
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => true,
+                'error' => null
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'failed',
+                'data' => null,
+                'error' => $th->getMessage()
+            ], 400);
+        }
+    }
+
+    public function inputMaterialAdditional(InputFabricTextureRequest $request)
+    {
+        try {
+            $this->inputFabricPhoto([
+                'sample_product_id' => $request->sample_product_id,
+                'material_type' => 'material_additional',
+                'material_id' => $request->material_id,
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => true,
+                'error' => null
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'failed',
+                'data' => null,
+                'error' => $th->getMessage()
+            ], 400);
+        }
+    }
+
+    public function inputAccessories(InputFabricTextureRequest $request)
+    {
+        try {
+            $this->inputFabricPhoto([
+                'sample_product_id' => $request->sample_product_id,
+                'material_type' => 'accessories',
+                'material_id' => $request->material_id,
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => true,
+                'error' => null
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'failed',
+                'data' => null,
+                'error' => $th->getMessage()
+            ], 400);
+        }
+    }
+
+    public function inputAccessoriesProduct(InputFabricTextureRequest $request)
+    {
+        try {
+            $this->inputFabricPhoto([
+                'sample_product_id' => $request->sample_product_id,
+                'material_type' => 'accessories_product',
                 'material_id' => $request->material_id,
             ]);
 
