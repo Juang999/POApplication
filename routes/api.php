@@ -182,6 +182,7 @@ Route::middleware('jwt.verify')->group(function () {
             Route::get('/{eventId}/{vid}/get-result', 'Api\Admin\ResourceAndDevelopment\VotingController@getResultVoting');
             Route::delete('/{id}/{sampleId}/remove-sample', 'Api\Admin\ResourceAndDevelopment\VotingController@removeSample');
             Route::delete('/{id}/{attendanceId}/cancel-invitation', 'Api\Admin\ResourceAndDevelopment\VotingController@removeInvitation');
+            Route::get('/active-event', 'Api\Admin\ResourceAndDevelopment\VotingController@getActiveEvent');
         });
     });
 

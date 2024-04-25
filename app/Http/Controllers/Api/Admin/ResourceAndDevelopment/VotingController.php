@@ -325,6 +325,25 @@ class VotingController extends Controller
         }
     }
 
+    public function getActiveEvent()
+    {
+        try {
+            $event = VotingEvent::where('is_activate', '=', true)->first();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $event,
+                'error' => null
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'failed',
+                'data' => null,
+                'error' => $th->getMessage()
+            ], 400);
+        }
+    }
+
     public function activateEvent($id)
     {
         try {
