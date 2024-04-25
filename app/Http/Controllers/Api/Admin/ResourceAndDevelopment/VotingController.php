@@ -30,11 +30,20 @@ class VotingController extends Controller
         try {
             $searchName = request()->search;
 
-            $dataEvent = VotingEvent::select('id', 'title', 'is_activate')
+            $dataEvent = VotingEvent::select([
+                                        'voting_events.id',
+                                        'title',
+                                        'is_activate',
+                                        DB::raw('AVG(voting_scores.score) AS average_score'),
+                                        DB::raw('CASE WHEN AVG(voting_scores.score) IS NULL THEN true ELSE false END AS status_edit')
+                                    ])->leftJoin('voting_scores', 'voting_scores.voting_event_id', '=', 'voting_events.id')
                                     ->when($searchName, function ($query) use ($searchName) {
                                         $query->where('title', 'like', "%$searchName%");
-                                    })
-                                    ->paginate(10);
+                                    })->groupBy([
+                                        'voting_events.id',
+                                        'title',
+                                        'is_activate'
+                                    ])->paginate(10);
 
             return response()->json([
                 'status' => 'success',
