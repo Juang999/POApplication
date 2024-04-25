@@ -26,7 +26,6 @@ class InputFabricTextureRequest extends FormRequest
         return [
             'sample_product_id' => 'required|integer',
             'material_id' => 'required|string',
-            'fabric_type' => 'required|string',
         ];
     }
 }
