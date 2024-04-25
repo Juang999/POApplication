@@ -356,14 +356,16 @@ class VotingController extends Controller
                                     'voting_events.updated_at',
                                 ])->with([
                                     'Highest' => function ($query) {
-                                        $query->select('voting_event_id', 'users.name', DB::raw('sample_products.article_name AS article_name'), DB::raw('score AS highest_score'))
-                                                ->leftJoin('users', 'users.attendance_id', '=', 'voting_scores.attendance_id')
-                                                ->leftJoin('sample_products', 'sample_products.id', '=', 'voting_scores.sample_product_id');
+                                        $query->select('voting_event_id', DB::raw('sample_products.article_name AS article_name'), DB::raw('AVG(score) AS highest_score'))
+                                                ->leftJoin('sample_products', 'sample_products.id', '=', 'voting_scores.sample_product_id')
+                                                ->groupBy(['voting_event_id', 'sample_product_id'])
+                                                ->orderByDesc('highest_score');
                                     },
                                     'Lowest' => function ($query) {
-                                        $query->select('voting_event_id', 'users.name', DB::raw('sample_products.article_name AS article_name'), DB::raw('score AS highest_score'))
-                                                ->leftJoin('users', 'users.attendance_id', '=', 'voting_scores.attendance_id')
-                                                ->leftJoin('sample_products', 'sample_products.id', '=', 'voting_scores.sample_product_id');
+                                        $query->select('voting_event_id', DB::raw('sample_products.article_name AS article_name'), DB::raw('AVG(score) AS highest_score'))
+                                                ->leftJoin('sample_products', 'sample_products.id', '=', 'voting_scores.sample_product_id')
+                                                ->groupBy(['voting_event_id', 'sample_product_id'])
+                                                ->orderBy('highest_score', 'ASC');
                                     }
                                 ])->first();
 
