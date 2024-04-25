@@ -33,11 +33,11 @@ class VotingEvent extends Model
 
     public function Highest()
     {
-        return $this->hasOne(VotingScore::class, 'voting_event_id', 'id')->orderByDesc('voting_scores.score');
+        return $this->hasOne(VotingScore::class, 'voting_event_id', 'id');
     }
 
     public function Lowest()
     {
-        return $this->hasOne(VotingScore::class, 'voting_event_id', 'id')->orderBy('voting_scores.score', 'ASC');
+        return $this->hasOne(VotingScore::class, 'voting_event_id', 'id');
     }
 }
