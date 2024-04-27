@@ -178,7 +178,7 @@ Route::middleware('jwt.verify')->group(function () {
             Route::delete('/{id}/delete-event', 'Api\Admin\ResourceAndDevelopment\VotingController@deleteEvent');
             Route::patch('/{id}/activate-event', 'Api\Admin\ResourceAndDevelopment\VotingController@activateEvent');
             Route::patch('/{id}/activate', 'Api\Admin\ResourceAndDevelopment\VotingController@showingSampleForAdmin');
-            Route::get('/{eventId}/summary-voting', 'Api\Admin\ResourceAndDevelopment\VotingController@getSumaryResult');
+            Route::get('/summary-voting', 'Api\Admin\ResourceAndDevelopment\VotingController@getSumaryResult');
             Route::get('/{eventId}/{vid}/get-result', 'Api\Admin\ResourceAndDevelopment\VotingController@getResultVoting');
             Route::delete('/{id}/{sampleId}/remove-sample', 'Api\Admin\ResourceAndDevelopment\VotingController@removeSample');
             Route::delete('/{id}/{attendanceId}/cancel-invitation', 'Api\Admin\ResourceAndDevelopment\VotingController@removeInvitation');

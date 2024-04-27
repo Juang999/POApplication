@@ -459,7 +459,7 @@ class VotingController extends Controller
         }
     }
 
-    public function getSumaryResult($eventId)
+    public function getSumaryResult()
     {
         try {
             $eventVoting = VotingEvent::select('id', 'start_date', 'title', 'description', 'is_activate')
@@ -472,7 +472,7 @@ class VotingController extends Controller
                                                     ->orderByDesc('total_score');
 
                                         }
-                                    ])->where('id', '=', $eventId)
+                                    ])->where('is_activate', '=', true)
                                     ->first();
 
             return response()->json([
