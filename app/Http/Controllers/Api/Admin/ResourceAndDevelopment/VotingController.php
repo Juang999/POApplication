@@ -465,10 +465,16 @@ class VotingController extends Controller
             $eventVoting = VotingEvent::select('id', 'start_date', 'title', 'description', 'is_activate')
                                     ->with([
                                         'ScoreVoting' => function ($query) {
-                                            $query->select('sample_id', 'voting_event_id', DB::raw('sample_products.article_name AS article_name'), DB::Raw('AVG(score) AS total_score'))
-                                                    ->with('Thumbnail')
+                                            $query->select([
+                                                        'sample_id',
+                                                        'voting_event_id',
+                                                        DB::raw('voting_event_id AS event_id'),
+                                                        DB::raw('sample_product_id AS vid'),
+                                                        DB::raw('sample_products.article_name AS article_name'),
+                                                        DB::Raw('AVG(score) AS total_score')
+                                                    ])->with('Thumbnail')
                                                     ->leftJoin('sample_products', 'sample_products.id', '=', 'voting_scores.sample_product_id')
-                                                    ->groupBy('sample_id', 'voting_event_id', 'article_name')
+                                                    ->groupBy('sample_id', 'voting_event_id', 'article_name', 'event_id', 'vid')
                                                     ->orderByDesc('total_score');
 
                                         }
