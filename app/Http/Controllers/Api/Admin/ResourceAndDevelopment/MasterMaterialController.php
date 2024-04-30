@@ -6,9 +6,17 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\MasterMaterial;
 use App\Http\Requests\Admin\SampleProduct\CreateMasterMaterialRequest;
+use Illuminate\Support\Facades\Http;
 
 class MasterMaterialController extends Controller
 {
+    public $url;
+
+    public function __construct()
+    {
+        $this->url = env('URL_EXAPRO');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -17,17 +25,15 @@ class MasterMaterialController extends Controller
     public function index()
     {
         try {
-            $masterMaterial = MasterMaterial::select(
-                                'id',
-                                'material_name',
-                                'material_description',
-                                'material_photo'
-                            )->where('material_function', '=', 'is_main')
-                            ->get();
+            $searchName = (request()->searchname) ? request()->searchname : '';
+            $exapro = $this->url;
+
+            $dataMaterial = Http::get("$exapro/api/master/get-material?searchname=$searchName");
+            $masterMaterial = json_decode($dataMaterial->body());
 
             return response()->json([
                 'status' => 'success',
-                'data' => $masterMaterial,
+                'data' => $masterMaterial->data,
                 'error' => null
             ], 200);
         } catch (\Throwable $th) {
@@ -218,6 +224,29 @@ class MasterMaterialController extends Controller
                 'status' => 'failed',
                 'data' => null,
                 'error' => $th->getMessage()
+            ], 400);
+        }
+    }
+
+    public function getAccessories()
+    {
+        try {
+            $searchName = (request()->searchname) ? request()->searchname : '';
+            $exapro = $this->url;
+
+            $dataMaterial = Http::get("$exapro/api/master/get-accessories?searchname=$searchName");
+            $masterMaterial = json_decode($dataMaterial->body());
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $masterMaterial->data,
+                'error' => null
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'failed',
+                'data' => null,
+                'error' => $th->getmessage()
             ], 400);
         }
     }

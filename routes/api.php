@@ -155,6 +155,7 @@ Route::middleware('jwt.verify')->group(function () {
             Route::get('/', 'Api\Admin\ResourceAndDevelopment\MasterMaterialController@index');
             Route::post('/create', 'Api\Admin\ResourceAndDevelopment\MasterMaterialController@store');
             Route::delete('/{id}/delete', 'Api\Admin\ResourceAndDevelopment\MasterMaterialController@destroy');
+            Route::get('/accessories', 'Api\Admin\ResourceAndDevelopment\MasterMaterialController@getAccessories');
             Route::get('/material-function', 'Api\Admin\ResourceAndDevelopment\MasterMaterialController@getMaterialFunction');
             Route::get('/additional-material', 'Api\Admin\ResourceAndDevelopment\MasterMaterialController@getAdditionalMaterial');
             Route::get('/product-accessories', 'Api\Admin\ResourceAndDevelopment\MasterMaterialController@getProductAccessories');
