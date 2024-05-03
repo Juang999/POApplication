@@ -788,15 +788,19 @@ class SampleProductController extends Controller
         $materialType = $request['material_type'];
 
         collect($materialId)->each(function ($item, $index) use ($sampleProductId, $materialType) {
-            $masterMaterial = MasterMaterial::find($item);
+            if ($materialType == 'material' || $materialType == 'material_additional') {
+                $DETAIL_DATA_ACCESSORIES_OR_MATERIAL = $this->getDetailMaterial($item);
+            } else {
+                $DETAIL_DATA_ACCESSORIES_OR_MATERIAL = $this->getDetailAccessories($item);
+            }
 
             FabricTexture::create([
                 'sample_product_id' => $sampleProductId,
-                'master_material_id' => $masterMaterial->id,
-                'material_name' => $masterMaterial->material_name,
+                'master_material_id' => $DETAIL_DATA_ACCESSORIES_OR_MATERIAL['id'],
+                'material_name' => $DETAIL_DATA_ACCESSORIES_OR_MATERIAL['material_name'],
                 'material_type' => $materialType,
-                'description' => $masterMaterial->material_description,
-                'photo' => $masterMaterial->material_photo,
+                'description' => $DETAIL_DATA_ACCESSORIES_OR_MATERIAL['material_description'],
+                'photo' => $DETAIL_DATA_ACCESSORIES_OR_MATERIAL['material_photo'],
                 'sequence' => $index + 1,
             ]);
         });
@@ -912,5 +916,23 @@ class SampleProductController extends Controller
         ]);
 
         return $partnumber;
+    }
+
+    private function getDetailMaterial($ptId)
+    {
+        $urlExapro = $this->url;
+        $url = Http::get("$urlExapro/api/master/$ptId/detail-material");
+        $data = json_decode($url->body(), true);
+
+        return $data['data'];
+    }
+
+    private function getDetailAccessories($ptId)
+    {
+        $urlExapro = $this->url;
+        $url = Http::get("$urlExapro/api/master/$ptId/detail-accessories");
+        $data = json_decode($url->body(), true);
+
+        return $data['data'];
     }
 }
