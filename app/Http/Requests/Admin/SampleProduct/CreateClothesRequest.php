@@ -24,6 +24,7 @@ class CreateClothesRequest extends FormRequest
     public function rules()
     {
         return [
+            'sample_product_id' => 'required|integer',
             'grade' => 'required|string',
             'size' => 'required|string',
             'entity_name' => "required|string",
