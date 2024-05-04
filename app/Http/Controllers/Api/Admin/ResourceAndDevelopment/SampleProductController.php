@@ -210,6 +210,8 @@ class SampleProductController extends Controller
             ])
             ->find($id);
 
+            // $sampleProduct->sample_reference = $this->getDetailSampleReference($sampleProduct->reference_sample_id);
+
             return response()->json([
                 'status' => 'success',
                 'data' => $sampleProduct,
@@ -705,7 +707,8 @@ class SampleProductController extends Controller
                 'pt_code' => $partnumber,
                 'pt_desc1' => $articleName,
                 'pt_class' => $grade,
-                'pt_cost' => $item['cost']
+                'pt_cost' => $item['cost'],
+                'material' => $this->getMaterial($request->sample_product_id)
             ]);
         });
     }
@@ -934,5 +937,12 @@ class SampleProductController extends Controller
         $data = json_decode($url->body(), true);
 
         return $data['data'];
+    }
+
+    private function getMaterial($id)
+    {
+        $dataMaterial = FabricTexture::where('sample_product_id', '=', $id)->pluck('master_material_id')->toArray();
+
+        return implode(',', $dataMaterial);
     }
 }
