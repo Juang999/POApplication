@@ -18,6 +18,7 @@ use App\{
     User,
     Models\Size,
     Models\Clothes,
+    Models\Product,
     Models\Partnumber,
     Models\SIP\UserSIP,
     Models\SampleDesign,
@@ -621,6 +622,8 @@ class SampleProductController extends Controller
             $grade = explode(',', strtoupper($request->grade));
 
             DB::beginTransaction();
+                $this->insertIntoProductTable($request->sample_product_id, $request);
+
                 collect($grade)->each(function ($item) use ($request) {
                     $this->inputCLothes($item, $request);
                 });
@@ -944,5 +947,63 @@ class SampleProductController extends Controller
         $dataMaterial = FabricTexture::where('sample_product_id', '=', $id)->pluck('master_material_id')->toArray();
 
         return implode(',', $dataMaterial);
+    }
+
+    private function insertIntoProductTable($sampleProductId, $request)
+    {
+        $product = Product::create([
+            'entity_name' => $request->entity_name,
+            'article_name' => $request->article_name,
+            'color' => $request->product_color,
+            'material' => '-',
+            'combo' => $request->combo,
+            'special_feature' => $request->special_feature,
+            'keyword' => $request->keyword,
+            'description' => $request->description,
+            'slug' => implode('-', explode(' ', strtolower($request->article_name))),
+            'category' => $request->category,
+            'type_id' => $request->type_id,
+            'is_active' => true,
+        ]);
+
+        $this->insertMaterialProduct($sampleProductId, $product->id);
+    }
+
+    private function insertMaterialProduct($sampleProductId, $productId)
+    {
+        $DATA_MATERIAL_SAMPLE_PRODUCT = $this->getDataMaterialSampleProduct($sampleProductId);
+
+        $dataMaterial = collect($DATA_MATERIAL_SAMPLE_PRODUCT)->map(function ($item, $index) use ($productId) {
+            return [
+                'product_id' => $productId,
+                'master_material_id' => $item->master_material_id,
+                'material_name' => $item->material_name,
+                'sequence' => $item->sequence,
+                'material_type' => $item->material_type,
+                'description' => $item->description,
+                'photo' => $item->photo,
+                'is_used' => $item->is_used,
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            ];
+        })->toArray();
+
+        DB::table('fabric_texture_products')->insert($dataMaterial);
+    }
+
+    private function getDataMaterialSampleProduct($sampleProductId)
+    {
+        $dataMaterial = FabricTexture::select(
+                                        'master_material_id',
+                                        'material_name',
+                                        'sequence',
+                                        'material_type',
+                                        'description',
+                                        'photo',
+                                        'is_used'
+                                    )->where('sample_product_id', '=', $sampleProductId)
+                                    ->get();
+
+        return $dataMaterial;
     }
 }
