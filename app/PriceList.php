@@ -3,10 +3,13 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class PriceList extends Model
 {
-    protected $guarded = [];
+    use LogsActivity;
+
+    protected $guarded = ['id'];
 
     public function Area()
     {
