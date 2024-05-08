@@ -308,8 +308,8 @@ class EventController extends Controller
             return [
                 'session_id' => $sessionId,
                 'product_id' => $decodedData['product_id'],
-                'created_at' => Carbon::now()->format('Y-m-d H:m:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:m:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'updated_at' => Carbon::now()->format('Y-m-d H:i:s')
             ];
         })->toArray();
 
