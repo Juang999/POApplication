@@ -6,8 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\{Product, PartnumberProduct, BufferProduct, Photo};
-use App\Http\Requests\Admin\Clothes\{CreateClothesRequest, UpdateClothesRequest};
+use App\Models\{Product, PartnumberProduct, BufferProduct, Photo, PriceList};
+use App\Http\Requests\Admin\Clothes\{CreateClothesRequest, UpdateClothesRequest, InputPriceListRequest};
 
 class ProductController extends Controller
 {
@@ -70,7 +70,6 @@ class ProductController extends Controller
                                     'products.keyword',
                                     'products.description',
                                     'products.slug',
-                                    'products.price',
                                     'products.group_article',
                                     DB::raw("CASE WHEN types.type IS NULL THEN '-' ELSE types.type END AS type"),
                                     'partnumber_products.partnumber',
@@ -79,17 +78,9 @@ class ProductController extends Controller
                                 ->leftJoin('partnumber_products', 'partnumber_products.product_id', '=', 'products.id')
                                 ->where('products.id', '=', $id)
                                 ->with([
-                                        'Photo' => function ($query) {
-                                            $query->select('id', 'product_id', 'photo');
-                                        },
-                                        'BufferProduct' => function ($query) {
-                                            $query->select(
-                                                        'buffer_products.clothes_id',
-                                                        'sizes.size',
-                                                        'buffer_products.size_id',
-                                                        'buffer_products.qty_avaliable',
-                                                    )->leftJoin('sizes', 'sizes.id', '=', 'buffer_products.size_id');
-                                        }
+                                        'Photo' => fn ($query) => $query->select('id', 'product_id', 'photo'),
+                                        'BufferProduct' => fn ($query) => $query->select('buffer_products.clothes_id','sizes.size','buffer_products.size_id','buffer_products.qty_avaliable',)->leftJoin('sizes', 'sizes.id', '=', 'buffer_products.size_id'),
+                                        'PriceList' => fn ($query) => $query->select('price_lists.id', 'clothes_id', DB::raw('sizes.size'), 'price')->leftJoin('sizes', 'sizes.id', '=', 'price_lists.size_id')
                                     ])
                                 ->first();
 
@@ -134,6 +125,7 @@ class ProductController extends Controller
 
                 $this->inputPartnumber($clothes->id, $request->partnumber);
                 $this->inputBufferStock($request->stock, $clothes->id);
+                $this->helperInputPriceList($request->price, $clothes->id);
             DB::commit();
 
             return response()->json([
@@ -196,8 +188,8 @@ class ProductController extends Controller
                 return [
                     "product_id" => $decodeData['product_id'],
                     "photo" => $decodeData['photo'],
-                    "created_at" => Carbon::now()->format('Y-m-d H:m:s'),
-                    "updated_at" => Carbon::now()->format('Y-m-d H:m:s')
+                    "created_at" => Carbon::now()->format('Y-m-d H:i:s'),
+                    "updated_at" => Carbon::now()->format('Y-m-d H:i:s')
                 ];
             })->toArray();
 
@@ -205,6 +197,44 @@ class ProductController extends Controller
 
             return response()->json([
                 'status' => 'success',
+                'data' => true,
+                'error' => null
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'failed',
+                'data' => null,
+                'error' => $th->getMessage()
+            ], 400);
+        }
+    }
+
+    public function inputPriceList(InputPriceListRequest $request)
+    {
+        try {
+            $this->helperInputPriceList($request->price, $request->product_id);
+
+            return response()->json([
+                'status'  => 'success',
+                'data' => true,
+                'error' => null
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'failed',
+                'data' => null,
+                'error' => $th->getMessage()
+            ], 400);
+        }
+    }
+
+    public function deletePrice($id)
+    {
+        try {
+            PriceList::where('id', '=', $id)->delete();
+
+            return response()->json([
+                'status' => 'succcess',
                 'data' => true,
                 'error' => null
             ], 200);
@@ -271,5 +301,22 @@ class ProductController extends Controller
             'qty_process' => 0,
             'qty_buffer' => 0
         ]);
+    }
+
+    private function helperInputPriceList($requestPrice, $id)
+    {
+        $rawData = json_decode($requestPrice, true);
+
+        $data = collect($rawData)->map(function ($item, $index) use ($id) {
+            return [
+                'clothes_id' => $id,
+                'size_id' => $item['size_id'],
+                'price' => $item['price'],
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'updated_at' => Carbon::now()->format('Y-m-d H:i:s')
+            ];
+        })->toArray();
+
+        DB::table('price_lists')->insert($data);
     }
 }
