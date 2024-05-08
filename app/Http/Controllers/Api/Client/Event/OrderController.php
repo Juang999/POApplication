@@ -11,12 +11,13 @@ use App\Http\Requests\Client\Order\{InputOrderRequest, UpdateOrderRequest};
 
 class OrderController extends Controller
 {
-    public function getProduct($eventId)
+    public function getProduct()
     {
         try {
             $searchName = request()->search_name;
             $phoneNumber = request()->header('phone');
-            $statusOrder = $this->getStatusOrder($eventId, $phoneNumber);
+            $statusOrder = $this->getStatusOrder($phoneNumber);
+            $dataBuyer = $this->getDataBuyer($phoneNumber);
 
             $products = Product::select(
                                 'products.id',
@@ -29,30 +30,29 @@ class OrderController extends Controller
                                 'types.type as type_name',
                                 'keyword',
                                 'description',
-                                'price'
+                                'price',
+                                DB::raw("$dataBuyer->discount AS discount")
                             )->leftJoin('types', 'types.id', '=', 'products.type_id')
-                            ->where('products.group_article', '=', $eventId)
-                            ->whereNotIn('products.id', function ($query) use ($eventId) {
-                                $phoneNumber = request()->header('phone');
-
-                                $query->select('product_id')
-                                    ->from('charts')
-                                    ->where([
-                                        ['client_id', '=', function ($query) use ($phoneNumber) {
-                                            $query->select('id')
-                                                ->from('distributors')
-                                                ->where('phone', '=', $phoneNumber);
-                                        }],
-                                        ['event_id', '=', $eventId]
-                                    ]);
-                            })
-                            ->when($searchName, function ($query) use ($searchName) {
+                            ->where('products.group_article', '=', fn ($query) => $query->select('id')->from('events')->where('is_active', '=', true))
+                            ->whereNotIn('products.id', fn ($query) => $query->select('product_id')->from('charts')->where([
+                                            [
+                                                'client_id', '=', fn ($query) => $query->select('id')->from('distributors')->where('phone', '=', $phoneNumber)
+                                            ],[
+                                                'event_id', '=', fn ($query) => $query->select('id')->from('events')->where('is_active', '=', true)
+                                            ]
+                            ]))->when($searchName, function ($query) use ($searchName) {
                                 $query->where('products.article_name', 'like', "%$searchName%");
-                            })
-                            ->with(['Photo' => function ($query) {
-                                $query->select('id', 'product_id', 'photo');
-                            }])
-                            ->paginate(1);
+                            })->with([
+                                'DataMaterial' => fn ($query) => $query->select('id', 'product_id', 'material_name', 'material_type', 'description', 'photo'),
+                                'MaterialAdditional' => fn ($query) => $query->select('id', 'product_id', 'material_name', 'material_type', 'description', 'photo'),
+                                'Accessories' => fn ($query) => $query->select('id', 'product_id', 'material_name', 'material_type', 'description', 'photo'),
+                                'AccessoriesProduct' => fn ($query) => $query->select('id', 'product_id', 'material_name', 'material_type', 'description', 'photo'),
+                                'Photo' => fn ($query) => $query->select('id', 'product_id', 'photo'),
+                                'PriceList' => function ($query) use ($dataBuyer) {
+                                    $query->select('price_lists.id', 'clothes_id', 'size_id', DB::raw('sizes.size AS size'), DB::raw('price AS normal_price'))
+                                        ->leftJoin('sizes', 'sizes.id', '=', 'price_lists.size_id');
+                                }
+                            ])->paginate(1);
 
             foreach ($products as $product) {
                 $product->combo = explode(', ', $product->combo);
@@ -129,11 +129,11 @@ class OrderController extends Controller
         }
     }
 
-    public function getDataChart($eventId)
+    public function getDataChart()
     {
         try {
             $phoneNumber = request()->header('phone');
-            $statusOrder = $this->getStatusOrder($eventId, $phoneNumber);
+            $statusOrder = $this->getStatusOrder($phoneNumber);
 
             $searchProduct = request()->searchproduct;
 
@@ -188,7 +188,7 @@ class OrderController extends Controller
                     ->from('distributors')
                     ->where('phone', '=', $phoneNumber)
                     ->first();
-            })->where('event_id', '=', $eventId)
+            })->where('event_id', '=', fn ($query) => $query->select('id')->from('events')->where('is_active', '=', true))
             ->when($searchProduct, function ($query) use ($searchProduct) {
                 $query->where('products.article_name', 'LIKE', "%$searchProduct%");
             })->with(['Photo' => function ($query) {
@@ -211,7 +211,7 @@ class OrderController extends Controller
         }
     }
 
-    public function countDataChart($eventId)
+    public function countDataChart()
     {
         try {
             $searchProduct = request()->searchproduct;
@@ -266,7 +266,7 @@ class OrderController extends Controller
                     ->from('distributors')
                     ->where('phone', '=', $phoneNumber)
                     ->first();
-            })->where('event_id', '=', $eventId)
+            })->where('event_id', '=', fn ($query) => $query->select('id')->from('events')->where('is_active', '=', true))
             ->when($searchProduct, function ($query) use ($searchProduct) {
                 $query->where('products.article_name', 'LIKE', "%$searchProduct%");
             })->count();
@@ -371,14 +371,14 @@ class OrderController extends Controller
         }
     }
 
-    public function createOrder($eventId)
+    public function createOrder()
     {
         try {
-            $dataChart = $this->dataChart($eventId);
+            $dataChart = $this->dataChart();
 
             DB::beginTransaction();
                 DB::table('orders')->insert($dataChart);
-                $this->deleteChart($eventId);
+                $this->deleteChart();
             DB::commit();
 
             return response()->json([
@@ -395,7 +395,7 @@ class OrderController extends Controller
         }
     }
 
-    public function historyOrder($eventId)
+    public function historyOrder()
     {
         try {
             $searchProduct = request()->searchproduct;
@@ -451,7 +451,7 @@ class OrderController extends Controller
                     ->from('distributors')
                     ->where('phone', '=', $phoneNumber)
                     ->first();
-            })->where('event_id', '=', $eventId)
+            })->where('event_id', '=', fn ($query) => $query->select('id')->from('events')->where('is_active', '=', true))
             ->when($searchProduct, function ($query) use ($searchProduct) {
                 $query->where('products.article_name', 'LIKE', "%$searchProduct%");
             })->with(['Photo' => function ($query) {
@@ -553,7 +553,7 @@ class OrderController extends Controller
         ];
     }
 
-    private function dataChart($eventId)
+    private function dataChart()
     {
         $rawDataChart = Chart::select(
             'client_id',
@@ -595,7 +595,7 @@ class OrderController extends Controller
                 ->from('distributors')
                 ->where('phone', '=', $phoneNumber)
                 ->first();
-        })->where('event_id', '=', $eventId)
+        })->where('event_id', '=', fn ($query) => $query->select('id')->from('events')->where('is_active', '=', true))
         ->get();
 
         $dataChart = collect($rawDataChart)->map(function ($data) {
@@ -633,15 +633,15 @@ class OrderController extends Controller
                 'size_41' => $data->size_41,
                 'size_42' => $data->size_42,
                 'size_other' => $data->size_other,
-                'created_at' => Carbon::now()->format('Y-m-d H:m:s'),
-                'updated_at' => Carbon::now()->format('Y-m-d H:m:s'),
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
             ];
         })->toArray();
 
         return $dataChart;
     }
 
-    private function deleteChart($eventId)
+    private function deleteChart()
     {
         $dataChart = Chart::select(
             'client_id',
@@ -656,7 +656,7 @@ class OrderController extends Controller
                 ->from('distributors')
                 ->where('phone', '=', $phoneNumber)
                 ->first();
-        })->where('event_id', '=', $eventId)
+        })->where('event_id', '=', fn ($query) => $query->select('id')->from('events')->where('is_active', '=', true))
         ->delete();
     }
 
@@ -667,18 +667,23 @@ class OrderController extends Controller
         return $distributor;
     }
 
-    private function getStatusOrder($eventId, $phoneNumber)
+    private function getStatusOrder($phoneNumber)
     {
         $dataOrder = Order::where([
-            ['event_id', '=', $eventId],
-            ['client_id', '=', function ($query) use ($phoneNumber) {
-                $query->select('id')
-                    ->from('distributors')
-                    ->where('phone', '=', $phoneNumber)
-                    ->first();
-            }]
+            ['event_id', '=', fn ($query) => $query->select('id')->from('events')->where('is_active', '=', true)],
+            ['client_id', '=', fn ($query) => $query->select('id')->from('distributors')->where('phone', '=', $phoneNumber)->first()]
         ])->count();
 
         return ($dataOrder > 0) ? true : false;
+    }
+
+    private function getDataBuyer($phoneNumber)
+    {
+        $dataBuyer = Distributor::select('distributors.id', 'name', 'phone', DB::raw('partner_groups.discount'))
+                                ->leftJoin('partner_groups', 'partner_groups.id', '=', 'distributors.partner_group_id')
+                                ->where('phone', '=', $phoneNumber)
+                                ->first();
+
+        return $dataBuyer;
     }
 }

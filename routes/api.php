@@ -254,12 +254,12 @@ Route::prefix('client')->group( function () {
     Route::prefix('SB')->middleware('client-check', 'check-event')->group(function () {
         Route::delete('/{id}/delete-chart', 'Api\Client\Event\OrderController@deleteDataChart');
         Route::post('chart-input', 'Api\Client\Event\OrderController@inputIntoChart');
-        Route::get('/{eventId}/product', 'Api\Client\Event\OrderController@getProduct');
-        Route::post('/{eventId}/order', 'Api\Client\Event\OrderController@createOrder');
-        Route::get('/{eventId}/data-chart', 'Api\Client\Event\OrderController@getDataChart');
+        Route::get('/product', 'Api\Client\Event\OrderController@getProduct');
+        Route::post('/order', 'Api\Client\Event\OrderController@createOrder');
+        Route::get('/data-chart', 'Api\Client\Event\OrderController@getDataChart');
         Route::put('/{id}/update-chart', 'Api\Client\Event\OrderController@updateDataChart');
-        Route::get('/{eventId}/count-data-chart', 'Api\Client\Event\OrderController@countDataChart');
-        Route::get('/{eventId}/history', 'Api\Client\Event\OrderController@historyOrder');
+        Route::get('/count-data-chart', 'Api\Client\Event\OrderController@countDataChart');
+        Route::get('/history', 'Api\Client\Event\OrderController@historyOrder');
     });
 
     Route::post('verification', 'Api\Client\Event\ClientController@verification');
