@@ -250,7 +250,9 @@ class ProductController extends Controller
     public function getSize()
     {
         try {
-            $dataSize = Size::select('id', 'size')->get();
+            $dataSize = Size::select('sizes.id', 'size', 'types.type')
+                            ->leftJoin('types', 'types.id', '=', 'sizes.type_id')
+                            ->get();
 
             return response()->json([
                 'status' => 'success',
