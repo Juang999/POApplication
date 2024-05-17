@@ -120,6 +120,7 @@ class ProductController extends Controller
                     'group_article' => $request->group_article,
                     'type_id' => $request->type_id,
                     'is_active' => 1,
+                    'price' => 0
                 ]);
 
                 $this->inputPartnumber($clothes->id, $request->partnumber);
