@@ -73,6 +73,7 @@ Route::middleware('jwt.verify')->group(function () {
             Route::post('/input-photo', 'Api\Admin\Event\ProductController@inputImage');
             Route::put('/{id}/update', 'Api\Admin\Event\ProductController@updateProduct');
             Route::get('/{id}/detail', 'Api\Admin\Event\ProductController@getDetailProduct');
+            Route::get('/sizes', 'Api\Admin\Event\ProductController@getSize');
         });
 
         Route::prefix('buffer-product')->group(function () {

@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\{Product, PartnumberProduct, BufferProduct, Photo, PriceList};
+use App\Models\{Product, PartnumberProduct, BufferProduct, Photo, PriceList, Size};
 use App\Http\Requests\Admin\Clothes\{CreateClothesRequest, UpdateClothesRequest, InputPriceListRequest};
 
 class ProductController extends Controller
@@ -244,6 +244,25 @@ class ProductController extends Controller
                 'data' => null,
                 'error' => $th->getMessage()
             ], 400);
+        }
+    }
+
+    public function getSize()
+    {
+        try {
+            $dataSize = Size::select('id', 'size')->get();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $dataSize,
+                'error' => null
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'failed',
+                'data' => null,
+                'error' => $th->getMessage()
+            ], 401);
         }
     }
 
