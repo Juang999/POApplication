@@ -114,6 +114,7 @@ class VotingController extends Controller
                     'start_date' => $request->start_date,
                     'title' => $request->title,
                     'description' => $request->description,
+                    'type' => $request->type,
                     'created_by' => $user->name
                 ]);
 

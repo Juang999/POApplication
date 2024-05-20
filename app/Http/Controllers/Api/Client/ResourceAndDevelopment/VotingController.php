@@ -72,7 +72,9 @@ class VotingController extends Controller
                 'sample_id' => $request->sample_id,
                 'sample_product_id' => $request->product_id,
                 'attendance_id' => $user->attendance_id,
-                'score' => $request->score,
+                'voting' => ($request->voting) ? $request->voting : null,
+                'score' => ($request->score) ? $request->score : null,
+                'fiksasi' => ($request->fiksasi) ? $request->fiksasi : null,
                 'note' => $request->note,
             ]);
 
