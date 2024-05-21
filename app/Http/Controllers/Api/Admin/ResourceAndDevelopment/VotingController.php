@@ -63,7 +63,7 @@ class VotingController extends Controller
     public function getDetailEvent($id)
     {
         try {
-            $event = VotingEvent::query()->select('voting_events.id', 'start_date', 'title', 'description', 'voting_events.created_by', 'voting_events.updated_by', 'voting_events.created_at')
+            $event = VotingEvent::query()->select('voting_events.id', 'start_date', 'title', 'type', 'description', 'voting_events.created_by', 'voting_events.updated_by', 'voting_events.created_at')
                                 ->with([
                                     'Member' => fn ($query) =>
                                                         $query->select(
