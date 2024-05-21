@@ -302,7 +302,9 @@ class EventController extends Controller
     public function currentEvent()
     {
         try {
-            $dataEvent = Event::select('id', 'event_name')->where('is_active', '=', true)->first();
+            $dataEvent = Event::select('id', 'event_name')->where('is_active', '=', true)
+                            ->with(['Product' => fn ($query) => $query->select('id', 'entity_name', 'article_name', 'is_active', 'group_article')])
+                            ->first();
 
             return response()->json([
                 'status' => 'success',
