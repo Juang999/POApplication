@@ -12,4 +12,9 @@ class Event extends Model
     {
         return $this->hasMany(Session::class, 'event_id', 'id');
     }
+
+    public function Product()
+    {
+        return $this->hasMany(Product::class, 'group_article', 'id');
+    }
 }

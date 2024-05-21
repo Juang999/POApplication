@@ -24,7 +24,7 @@ class OrderController extends Controller
                                 'entity_name',
                                 'article_name',
                                 'color',
-                                'combo',
+                                // 'combo',
                                 'material',
                                 'type_id',
                                 'types.type as type_name',
@@ -33,8 +33,10 @@ class OrderController extends Controller
                                 'price',
                                 DB::raw("$dataBuyer->discount AS discount")
                             )->leftJoin('types', 'types.id', '=', 'products.type_id')
-                            ->where('products.group_article', '=', fn ($query) => $query->select('id')->from('events')->where('is_active', '=', true))
-                            ->whereNotIn('products.id', fn ($query) => $query->select('product_id')->from('charts')->where([
+                            ->where([
+                                ['products.is_active', '=', true],
+                                ['products.group_article', '=', fn ($query) => $query->select('id')->from('events')->where('is_active', '=', true)]
+                            ])->whereNotIn('products.id', fn ($query) => $query->select('product_id')->from('charts')->where([
                                             [
                                                 'client_id', '=', fn ($query) => $query->select('id')->from('distributors')->where('phone', '=', $phoneNumber)
                                             ],[
@@ -52,11 +54,11 @@ class OrderController extends Controller
                                     $query->select('price_lists.id', 'clothes_id', 'size_id', DB::raw('sizes.size AS size'), DB::raw('price AS normal_price'))
                                         ->leftJoin('sizes', 'sizes.id', '=', 'price_lists.size_id');
                                 }
-                            ])->paginate(1);
+                            ])->first();
 
-            foreach ($products as $product) {
-                $product->combo = explode(', ', $product->combo);
-            }
+            // foreach ($products as $product) {
+            //     $product->combo = explode(', ', $product->combo);
+            // }
 
             return response()->json([
                 'status' => 'success',

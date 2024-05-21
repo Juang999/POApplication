@@ -94,6 +94,7 @@ Route::middleware('jwt.verify')->group(function () {
             Route::delete('/{id}/delete-detail-session', 'Api\Admin\Event\EventController@deleteDetailSession');
             Route::post('/input-detail-session', 'Api\Admin\Event\EventController@inputDetailSession');
             Route::get('/current-event', 'Api\Admin\Event\EventController@currentEvent');
+            Route::patch('/{id}/activate-product', 'Api\Admin\Event\EventController@activateProduct');
         });
 
         Route::prefix('report')->group(function () {

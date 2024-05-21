@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\{Event, Session, DetailSession};
+use App\Models\{Event, Session, DetailSession, Product};
 use App\Http\Requests\Admin\Event\{CreateEventRequest, UpdateEventRequest, CreateSessionRequest, CreateDetailSessionRequest};
 
 class EventController extends Controller
@@ -143,11 +143,37 @@ class EventController extends Controller
     public function getDetailEvent($id)
     {
         try {
-            $event = Event::select('id', 'event_name', 'event_desc', 'start_date', 'end_date', 'is_active')->where('id', '=', $id)->with('Session')->first();
+            $event = Event::select('id', 'event_name', 'event_desc', 'start_date', 'end_date', 'is_active')->where('id', '=', $id)
+                            ->with(['Product' => fn ($query) => $query->select('id', 'entity_name', 'article_name', 'is_active', 'group_article')])
+                            ->first();
 
             return response()->json([
                 'status' => 'success',
                 'data' => $event,
+                'error' => null
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'failed',
+                'data' => null,
+                'error' => $th->getMessage()
+            ], 400);
+        }
+    }
+
+    public function activateProduct($id)
+    {
+        try {
+            $this->inactivateProduct();
+
+            Product::where([
+                    ['id', '=', $id],
+                    ['group_article', '=', fn ($query) => $query->select('id')->from('events')->where('is_active', '=', true)]
+                ])->update(['is_active' => true]);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => true,
                 'error' => null
             ], 200);
         } catch (\Throwable $th) {
@@ -314,5 +340,14 @@ class EventController extends Controller
         })->toArray();
 
         DB::table('detail_sessions')->insert($inputDetailSession);
+    }
+
+    private function inactivateProduct()
+    {
+        Product::where([
+            ['is_active', '=', true]
+        ])->update([
+            'is_active' => false
+        ]);
     }
 }
