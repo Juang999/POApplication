@@ -33,6 +33,7 @@ class VotingController extends Controller
             $dataEvent = VotingEvent::select([
                                         'voting_events.id',
                                         'title',
+                                        'type',
                                         'is_activate',
                                         DB::raw('AVG(voting_scores.score) AS average_score'),
                                         DB::raw('CASE WHEN AVG(voting_scores.score) IS NULL THEN true ELSE false END AS status_edit')
