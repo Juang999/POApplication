@@ -27,6 +27,7 @@ class CreateVotingEventRequest extends FormRequest
             'start_date' => 'required|date',
             'title' => 'required|string',
             'description' => 'required|string',
+            'type' => 'required',
             'member_attendance_id' => 'required|string',
             'sample_id' => 'required|string'
         ];

@@ -27,7 +27,9 @@ class VoteSampleRequest extends FormRequest
             'voting_event_id' => 'required|integer',
             'sample_id' => 'required|integer',
             'product_id' => 'required|integer',
-            'score' => 'required|integer',
+            'voting' => 'nullable|integer',
+            'score' => 'nullable|integer',
+            'fiksasi' => 'nullable|integer',
             'note' => 'required|string',
         ];
     }
