@@ -194,7 +194,7 @@ class VotingController extends Controller
 
     private function eventIsActive()
     {
-        $dataEvent = VotingEvent::select('id', 'start_date', 'title', 'description')->where('is_activate', '=', true)->first();
+        $dataEvent = VotingEvent::select('id', 'start_date', 'title', 'type', 'description')->where('is_activate', '=', true)->first();
 
         return $dataEvent;
     }
