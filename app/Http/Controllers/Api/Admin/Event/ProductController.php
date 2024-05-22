@@ -71,12 +71,14 @@ class ProductController extends Controller
                                     'products.keyword',
                                     'products.description',
                                     'products.slug',
+                                    'events.event_name',
                                     'products.group_article',
                                     DB::raw("CASE WHEN types.type IS NULL THEN '-' ELSE types.type END AS type"),
                                     'partnumber_products.partnumber',
                                     'products.is_active'
                                 )->leftJoin('types', 'types.id', '=', 'products.type_id')
                                 ->leftJoin('partnumber_products', 'partnumber_products.product_id', '=', 'products.id')
+                                ->leftJoin('events', 'events.id', '=', 'products.group_article')
                                 ->where('products.id', '=', $id)
                                 ->with([
                                         'Photo' => fn ($query) => $query->select('id', 'product_id', 'photo'),
