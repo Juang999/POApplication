@@ -181,7 +181,6 @@ class OrderController extends Controller
                 'charts.size_41',
                 'charts.size_42',
                 'charts.created_at'
-
             )->join('products', 'products.id', '=', 'charts.product_id')
             ->join('types', 'types.id', '=', 'products.type_id')
             ->where('charts.client_id', '=', function($query) {
@@ -193,10 +192,10 @@ class OrderController extends Controller
             })->where('event_id', '=', fn ($query) => $query->select('id')->from('events')->where('is_active', '=', true))
             ->when($searchProduct, function ($query) use ($searchProduct) {
                 $query->where('products.article_name', 'LIKE', "%$searchProduct%");
-            })->with(['Photo' => function ($query) {
-                $query->select('photo');
-            }])
-            ->get();
+            })->with([
+                'Photo' => fn ($query) => $query->select('photo'),
+                'PriceList' => fn ($query) => $query->select('clothes_id', 'sizes.size', 'price_lists.price')->leftJoin('sizes', 'sizes.id', '=', 'price_lists.size_id')
+            ])->get();
 
             return response()->json([
                 'status' => 'success',
