@@ -16,8 +16,8 @@ class OrderController extends Controller
         try {
             $searchName = request()->search_name;
             $phoneNumber = request()->header('phone');
-            $statusOrder = $this->getStatusOrder($phoneNumber);
             $dataBuyer = $this->getDataBuyer($phoneNumber);
+            $statusOrder = $this->getStatusOrder($phoneNumber);
 
             $products = Product::select(
                                 'products.id',
@@ -135,6 +135,7 @@ class OrderController extends Controller
     {
         try {
             $phoneNumber = request()->header('phone');
+            $dataBuyer = $this->getDataBuyer($phoneNumber);
             $statusOrder = $this->getStatusOrder($phoneNumber);
 
             $searchProduct = request()->searchproduct;
@@ -149,6 +150,7 @@ class OrderController extends Controller
                 'products.material',
                 'products.keyword',
                 'products.type_id',
+                DB::raw("$dataBuyer->discount AS discount"),
                 'types.type',
                 'products.description',
                 'products.price',
