@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\{Product, PartnumberProduct, BufferProduct, Photo, PriceList, Size};
 use App\Http\Requests\Admin\Clothes\{CreateClothesRequest, UpdateClothesRequest, InputPriceListRequest};
+use App\Http\Requests\Admin\Event\UpdatePriceListRequest;
 
 class ProductController extends Controller
 {
@@ -263,6 +264,27 @@ class ProductController extends Controller
                 'data' => null,
                 'error' => $th->getMessage()
             ], 401);
+        }
+    }
+
+    public function updatePricelist(UpdatePriceListRequest $request, $id)
+    {
+        try {
+            $dataPricelist = PriceList::where('id', '=', $id)->update([
+                'price' => $request->pricelist
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $dataPricelist,
+                'error' => null
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'failed',
+                'data' => null,
+                'error' => $th->getMessage()
+            ], 400);
         }
     }
 

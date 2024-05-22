@@ -67,13 +67,15 @@ Route::middleware('jwt.verify')->group(function () {
         });
 
         Route::prefix('product')->group(function () {
+            Route::get('/sizes', 'Api\Admin\Event\ProductController@getSize');
             Route::get('/get', 'Api\Admin\Event\ProductController@getAllProduct'); //diubah
-            Route::post('/input-price', 'Api\Admin\Event\ProductController@inputPriceList');
             Route::post('/create', 'Api\Admin\Event\ProductController@storeProduct');
             Route::post('/input-photo', 'Api\Admin\Event\ProductController@inputImage');
             Route::put('/{id}/update', 'Api\Admin\Event\ProductController@updateProduct');
+            Route::post('/input-price', 'Api\Admin\Event\ProductController@inputPriceList');
             Route::get('/{id}/detail', 'Api\Admin\Event\ProductController@getDetailProduct');
-            Route::get('/sizes', 'Api\Admin\Event\ProductController@getSize');
+            Route::delete('/{id}/delete-price', 'Api\Admin\Event\ProductController@deletePrice');
+            Route::patch('/{id}/update-price', 'Api\Admin\Event\ProductController@updatePricelist');
         });
 
         Route::prefix('buffer-product')->group(function () {
@@ -83,18 +85,18 @@ Route::middleware('jwt.verify')->group(function () {
 
         Route::prefix('event')->group(function () {
             Route::get('/get', 'Api\Admin\Event\EventController@getEvent'); //diubah
-            Route::get('/list-event', 'Api\Admin\Event\EventController@getListEvent');
             Route::post('/create', 'Api\Admin\Event\EventController@createEvent'); //diubah
-            Route::delete('/{id}/delete-event', 'Api\Admin\Event\EventController@deleteEvent');
-            Route::delete('/{id}/delete-session', 'Api\Admin\Event\EventController@deleteSession');
+            Route::get('/list-event', 'Api\Admin\Event\EventController@getListEvent');
+            Route::get('/current-event', 'Api\Admin\Event\EventController@currentEvent');
             Route::get('/{id}/detail', 'Api\Admin\Event\EventController@getDetailEvent');
             Route::post('/input-session', 'Api\Admin\Event\EventController@createSession');
             Route::put('/{id}/update-event', 'Api\Admin\Event\EventController@updateEvent');
+            Route::delete('/{id}/delete-event', 'Api\Admin\Event\EventController@deleteEvent');
             Route::patch('/{id}/activate-event', 'Api\Admin\Event\EventController@activateEvent');
-            Route::delete('/{id}/delete-detail-session', 'Api\Admin\Event\EventController@deleteDetailSession');
-            Route::post('/input-detail-session', 'Api\Admin\Event\EventController@inputDetailSession');
-            Route::get('/current-event', 'Api\Admin\Event\EventController@currentEvent');
+            Route::delete('/{id}/delete-session', 'Api\Admin\Event\EventController@deleteSession');
             Route::patch('/{id}/activate-product', 'Api\Admin\Event\EventController@activateProduct');
+            Route::post('/input-detail-session', 'Api\Admin\Event\EventController@inputDetailSession');
+            Route::delete('/{id}/delete-detail-session', 'Api\Admin\Event\EventController@deleteDetailSession');
         });
 
         Route::prefix('report')->group(function () {
