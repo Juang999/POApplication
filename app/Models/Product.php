@@ -13,6 +13,11 @@ class Product extends Model
         return $this->hasMany(Photo::class, 'product_id', 'id');
     }
 
+    public function Thumbnail()
+    {
+        return $this->hasOne(Photo::class, 'product_id', 'id');
+    }
+
     public function BufferProduct()
     {
         return $this->hasOne(BufferProduct::class, 'clothes_id', 'id');
