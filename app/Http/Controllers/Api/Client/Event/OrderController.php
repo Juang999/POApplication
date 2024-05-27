@@ -54,7 +54,7 @@ class OrderController extends Controller
                                     $query->select('price_lists.id', 'clothes_id', 'size_id', DB::raw('sizes.size AS size'), DB::raw('price AS normal_price'))
                                         ->leftJoin('sizes', 'sizes.id', '=', 'price_lists.size_id');
                                 }
-                            ])->first();
+                            ])->get();
 
             // foreach ($products as $product) {
             //     $product->combo = explode(', ', $product->combo);

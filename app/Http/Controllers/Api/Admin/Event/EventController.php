@@ -164,12 +164,12 @@ class EventController extends Controller
     public function activateProduct($id)
     {
         try {
-            $this->inactivateProduct();
+            $dataProduct = $this->dataProduct($id);
 
             Product::where([
                     ['id', '=', $id],
                     ['group_article', '=', fn ($query) => $query->select('id')->from('events')->where('is_active', '=', true)]
-                ])->update(['is_active' => true]);
+                ])->update(['is_active' => ($dataProduct->is_active == true) ? false : true ]);
 
             return response()->json([
                 'status' => 'success',
@@ -344,12 +344,12 @@ class EventController extends Controller
         DB::table('detail_sessions')->insert($inputDetailSession);
     }
 
-    private function inactivateProduct()
+    private function dataProduct($id)
     {
-        Product::where([
-            ['is_active', '=', true]
-        ])->update([
-            'is_active' => false
-        ]);
+        $product = Product::where([
+            ['id', '=', $id]
+        ])->first();
+
+        return $product;
     }
 }
