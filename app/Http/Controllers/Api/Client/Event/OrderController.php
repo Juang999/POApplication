@@ -451,6 +451,7 @@ class OrderController extends Controller
                 'orders.size_40',
                 'orders.size_41',
                 'orders.size_42',
+                'orders.discount',
                 'orders.created_at'
 
             )->join('products', 'products.id', '=', 'orders.product_id')
