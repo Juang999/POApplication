@@ -114,7 +114,9 @@ class OrderController extends Controller
                 'size_40' => $request['size_40'],
                 'size_41' => $request['size_41'],
                 'size_42' => $request['size_42'],
-                'size_other' => $request['size_other']
+                'size_other' => $request['size_other'],
+                'discount' => $request['discount'],
+                'total_order' => $request['total_order']
             ]);
 
             return response()->json([
@@ -515,7 +517,8 @@ class OrderController extends Controller
             'size_41' => (array_key_exists('size_41', $request)) ? $request['size_41'] : 0,
             'size_42' => (array_key_exists('size_42', $request)) ? $request['size_42'] : 0,
             'size_other' => (array_key_exists('size_other', $request)) ? $request['size_other'] : 0,
-            'discount' => $dataClient->discount
+            'discount' => $dataClient->discount,
+            'total_order' => (array_key_exists('total_order', $request)) ? $request['total_order'] : 0,
         ];
     }
 
@@ -593,7 +596,8 @@ class OrderController extends Controller
             'size_41',
             'size_42',
             'size_other',
-            'discount'
+            'discount',
+            'total_order'
         )->where('charts.client_id', '=', function($query) {
             $phoneNumber = request()->header('phone');
             $query->select('id')
@@ -640,7 +644,8 @@ class OrderController extends Controller
                 'size_other' => $data->size_other,
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
                 'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
-                'discount' => $data->discount
+                'discount' => $data->discount,
+                'total_order' => $data->total_order
             ];
         })->toArray();
 

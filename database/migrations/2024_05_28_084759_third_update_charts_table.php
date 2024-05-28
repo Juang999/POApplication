@@ -15,6 +15,7 @@ class ThirdUpdateChartsTable extends Migration
     {
         Schema::table('charts', function (Blueprint $table) {
             $table->double('discount', 10, 2);
+            $table->integer('total_order');
         });
     }
 

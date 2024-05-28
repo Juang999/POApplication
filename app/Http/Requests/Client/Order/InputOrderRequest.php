@@ -55,6 +55,7 @@ class InputOrderRequest extends FormRequest
             'size_41' => 'nullable|integer',
             'size_42' => 'nullable|integer',
             'size_other' => 'nullable|integer',
+            'total_order' => 'required|integer'
         ];
     }
 }

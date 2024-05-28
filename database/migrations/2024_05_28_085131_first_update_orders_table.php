@@ -15,6 +15,7 @@ class FirstUpdateOrdersTable extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             $table->double('discount', 10, 2);
+            $table->integer('total_order');
         });
     }
 
