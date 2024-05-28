@@ -376,7 +376,7 @@ class OrderController extends Controller
         }
     }
 
-    public function createOrder(InputTotalOrderRequest $request)
+    public function createOrder()
     {
         try {
             $activeEvent = $this->activeEvent();
@@ -386,7 +386,7 @@ class OrderController extends Controller
             $dataChart = $this->dataChart($dataClient->id, $activeEvent->id);
 
             DB::beginTransaction();
-                $this->inputTotalOrder($dataClient->id, $activeEvent->id, $dataClient->discount, $request->total_order);
+                // $this->inputTotalOrder($dataClient->id, $activeEvent->id, $dataClient->discount, $request->total_order);
                 DB::table('orders')->insert($dataChart);
                 $this->deleteChart();
             DB::commit();
