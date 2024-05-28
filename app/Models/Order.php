@@ -17,4 +17,9 @@ class Order extends Model
     {
         return $this->belongsTo(Distributor::class, 'client_id', 'id');
     }
+
+    public function PriceList()
+    {
+        return $this->hasManyThrough(PriceList::class, Product::class, 'id', 'clothes_id', 'product_id', 'id');
+    }
 }
