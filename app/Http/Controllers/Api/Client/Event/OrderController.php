@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api\Client\Event;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\{Product, Chart, Order, Distributor};
+use App\Models\{Product, Chart, Order, Distributor, Event, TotalOrder};
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use App\Http\Requests\Client\Order\{InputOrderRequest, UpdateOrderRequest};
+use App\Http\Requests\Client\Order\{InputOrderRequest, InputTotalOrderRequest, UpdateOrderRequest};
 
 class OrderController extends Controller
 {
@@ -376,12 +376,17 @@ class OrderController extends Controller
         }
     }
 
-    public function createOrder()
+    public function createOrder(InputTotalOrderRequest $request)
     {
         try {
-            $dataChart = $this->dataChart();
+            $activeEvent = $this->activeEvent();
+            $phoneNumber = request()->header('phone');
+            $dataClient = $this->getDataClient($phoneNumber);
+
+            $dataChart = $this->dataChart($dataClient->id, $activeEvent->id);
 
             DB::beginTransaction();
+                $this->inputTotalOrder($dataClient->id, $activeEvent->id, $dataClient->discount, $request->total_order);
                 DB::table('orders')->insert($dataChart);
                 $this->deleteChart();
             DB::commit();
@@ -560,7 +565,7 @@ class OrderController extends Controller
         ];
     }
 
-    private function dataChart()
+    private function dataChart($clientId, $eventId)
     {
         $rawDataChart = Chart::select(
             'client_id',
@@ -598,14 +603,10 @@ class OrderController extends Controller
             'size_other',
             'discount',
             'total_order'
-        )->where('charts.client_id', '=', function($query) {
-            $phoneNumber = request()->header('phone');
-            $query->select('id')
-                ->from('distributors')
-                ->where('phone', '=', $phoneNumber)
-                ->first();
-        })->where('event_id', '=', fn ($query) => $query->select('id')->from('events')->where('is_active', '=', true))
-        ->get();
+        )->where([
+            ['charts.client_id', '=', $clientId],
+            ['event_id', '=', $eventId]
+        ])->get();
 
         $dataChart = collect($rawDataChart)->map(function ($data) {
             return [
@@ -698,5 +699,24 @@ class OrderController extends Controller
                                 ->first();
 
         return $dataBuyer;
+    }
+
+    private function activeEvent()
+    {
+        $activeEvent = Event::where('is_active', '=', true)->first();
+
+        return $activeEvent;
+    }
+
+    private function inputTotalOrder($clientId, $eventId, $discount, $totalOrder)
+    {
+        $totalOrder = TotalOrder::create([
+            'client_id' => $clientId,
+            'event_id' => $eventId,
+            'total_order' => $totalOrder,
+            'discount' => $discount
+        ]);
+
+        return $totalOrder;
     }
 }
