@@ -515,6 +515,7 @@ class OrderController extends Controller
             'size_41' => (array_key_exists('size_41', $request)) ? $request['size_41'] : 0,
             'size_42' => (array_key_exists('size_42', $request)) ? $request['size_42'] : 0,
             'size_other' => (array_key_exists('size_other', $request)) ? $request['size_other'] : 0,
+            'discount' => $dataClient->discount
         ];
     }
 
@@ -591,7 +592,8 @@ class OrderController extends Controller
             'size_40',
             'size_41',
             'size_42',
-            'size_other'
+            'size_other',
+            'discount'
         )->where('charts.client_id', '=', function($query) {
             $phoneNumber = request()->header('phone');
             $query->select('id')
@@ -638,6 +640,7 @@ class OrderController extends Controller
                 'size_other' => $data->size_other,
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
                 'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                'discount' => $data->discount
             ];
         })->toArray();
 
@@ -665,7 +668,9 @@ class OrderController extends Controller
 
     private function getDataClient($clientPhoneNumber)
     {
-        $distributor = Distributor::where('phone', '=', $clientPhoneNumber)->first();
+        $distributor = Distributor::select('distributors.id', 'partner_groups.discount')->where('phone', '=', $clientPhoneNumber)
+                                ->leftJoin('partner_groups', 'partner_groups.id', '=', 'distributors.partner_group_id')
+                                ->first();
 
         return $distributor;
     }
