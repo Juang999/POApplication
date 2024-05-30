@@ -29,6 +29,7 @@ class VotingController extends Controller
     {
         try {
             $searchName = request()->search;
+            $type = request()->type;
 
             $dataEvent = VotingEvent::select([
                                         'voting_events.id',
@@ -40,7 +41,11 @@ class VotingController extends Controller
                                     ])->leftJoin('voting_scores', 'voting_scores.voting_event_id', '=', 'voting_events.id')
                                     ->when($searchName, function ($query) use ($searchName) {
                                         $query->where('title', 'like', "%$searchName%");
-                                    })->groupBy([
+                                    })
+                                    ->when($type, function ($query) use ($type) {
+                                        $query->where('type', '=', $type);
+                                    })
+                                    ->groupBy([
                                         'voting_events.id',
                                         'title',
                                         'type',
