@@ -43,6 +43,7 @@ class VotingController extends Controller
                                     })->groupBy([
                                         'voting_events.id',
                                         'title',
+                                        'type',
                                         'is_activate'
                                     ])->paginate(10);
 
