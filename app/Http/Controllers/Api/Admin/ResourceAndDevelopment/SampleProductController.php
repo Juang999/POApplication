@@ -259,6 +259,7 @@ class SampleProductController extends Controller
                     'designer_id' => $requests['designer_id'],
                     'md_id' => $requests['md_id'],
                     'leader_designer_id' => $requests['leader_designer_id'],
+                    'note_and_description_2' => $request->note_and_description_2
                 ]);
             DB::commit();
 
