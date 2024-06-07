@@ -116,6 +116,7 @@ class SampleProductController extends Controller
                     'designer_id' => $designerId,
                     'md_id' => $merchandiserId,
                     'leader_designer_id' => $leaderDesignerId,
+                    'note_and_description_2' => $request->note_and_description_2
                 ]);
 
                 $this->inputSamplePhoto(['sp_id' => $sampleProduct->id, 'photo' => $request->photo]);

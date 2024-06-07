@@ -43,6 +43,7 @@ class SampleProductRequest extends FormRequest
             'material_additional_id' => 'required|string',
             'accessories_id' => 'required|string',
             'accessories_product_id' => 'required|string',
+            'note_and_description_2' => 'nullable|string',
         ];
     }
 }
